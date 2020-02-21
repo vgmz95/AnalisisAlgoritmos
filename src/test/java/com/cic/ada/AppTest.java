@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import com.cic.ada.Grafo.Graph;
 import com.cic.ada.Grafo.Vertex;
 
@@ -57,4 +59,30 @@ public class AppTest {
         Graph graph = Graph.generateGilbertGraph(n, m, false, true);
         System.out.println("Graph: " + graph.toString());
     }
+
+    /**
+     * Test Geographic Graph Generation
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void GeoTest() throws IOException {
+        int n = 25;
+        double r = 0.3;
+        Graph graph = Graph.generateGeographicGraph(n, r, false, true);
+        System.out.println("Graph: " + graph.toString());
+        graph.writeToWizFile("/home/victor/Documents", "geographic.wiz");
+    }
+
+    /**
+     * Test Barabasi Albert Graph Generation
+     */
+    @Test
+    public void BarabasiAlbertTest() {
+        int n = 20;
+        double m = 2;
+        Graph graph = Graph.generateBarabasiAlbertGraph(n, m, false, true);
+        System.out.println("Graph: " + graph.toString());
+    }
+
 }

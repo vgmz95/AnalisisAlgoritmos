@@ -1,9 +1,16 @@
 package com.cic.ada.Grafo;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.json.JSONObject;
 
@@ -58,20 +65,33 @@ public class Graph {
     }
 
     public boolean existEdge(Vertex vertex1, Vertex vertex2) {
-        if (Edges.get(vertex1.getName()).isEmpty())
+        // If directed
+        // return from vertex1->vertex2
+        if (directed)
+            return existEdgeHelper(vertex1, vertex2);
+
+        // if not directed
+        // return from vertex1->vertex2 OR vertex2->vertex1
+        else
+            return existEdgeHelper(vertex1, vertex2) || existEdgeHelper(vertex2, vertex1);
+    }
+
+    private boolean existEdgeHelper(Vertex vertex1, Vertex vertex2) {// From Vertex1 to Vertex2
+        if (Edges.get(vertex1.getName()).isEmpty()) // Empty list
             return false;
         else
             return Edges.get(vertex1.getName()).stream().anyMatch(edge -> edge.Node2.equals(vertex2));
+    }
+
+    public int VertexDegree(Vertex vertex) {
+        return Edges.get(vertex.getName()).size();
     }
 
     // First one
     public static Graph generateErdosRenyiGraph(int n, int m, boolean directed, boolean selfRelated) {
         Graph graph = new Graph(directed);
         // Create n vertices
-        for (int i = 0; i < n; i++) {
-            Vertex v = new Vertex(i + "", new JSONObject());
-            graph.addVertex(v);
-        }
+        IntStream.range(0, n).forEach(i -> graph.addVertex(new Vertex(i + "", new JSONObject())));
 
         // Randomly choose m different pairs of different vertices
         for (int i = 0; i < m; i++) {
@@ -79,7 +99,6 @@ public class Graph {
             int v2 = ThreadLocalRandom.current().nextInt(n);
             Vertex vertex1 = graph.getVertices().get(v1 + "");
             Vertex vertex2 = graph.getVertices().get(v2 + "");
-
             if (v1 == v2 && !selfRelated) { // Same vertex
                 i--;
             } else if (graph.existEdge(vertex1, vertex2)) {
@@ -92,30 +111,107 @@ public class Graph {
     }
 
     // Second one
-
     public static Graph generateGilbertGraph(int n, double p, boolean directed, boolean selfRelated) {
         Graph graph = new Graph(directed);
         // Create n vertices
-        for (int i = 0; i < n; i++) {
-            Vertex v = new Vertex(i + "", new JSONObject());
-            graph.getVertices().put(v.getName(), v);
-        }
+        IntStream.range(0, n).forEach(i -> graph.addVertex(new Vertex(i + "", new JSONObject())));
 
-        // Create a vertex if random>=p
+        // Create an edge if random>=p
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (i == j && !selfRelated)
                     continue;
-                // TODO: checar si la arista ya existe
                 double random = ThreadLocalRandom.current().nextDouble();
                 if (random <= p) {
                     Vertex vertex1 = graph.getVertices().get(i + "");
                     Vertex vertex2 = graph.getVertices().get(j + "");
+                    if (!graph.existEdge(vertex1, vertex2))
+                        graph.addEdge(vertex1, vertex2, new JSONObject());
+                }
+            }
+        }
+        return graph;
+    }
+
+    // Third one
+    public static Graph generateGeographicGraph(int n, double r, boolean directed, boolean selfRelated) {
+        Graph graph = new Graph(directed);
+        // Create n vertices
+        for (int i = 0; i < n; i++) {
+            double x = ThreadLocalRandom.current().nextDouble();
+            double y = ThreadLocalRandom.current().nextDouble();
+            var info = new JSONObject();
+            info.put("x", x);
+            info.put("y", y);
+            Vertex v = new Vertex(i + "", info);
+            graph.addVertex(v);
+        }
+
+        // Create an edge if random>=p
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == j && !selfRelated) // Same vertex
+                    continue;
+
+                Vertex vertex1 = graph.getVertices().get(i + "");
+                Vertex vertex2 = graph.getVertices().get(j + "");
+                if (!graph.existEdge(vertex1, vertex2)) {
+                    // Calculate distance
+                    double x_1 = vertex1.getData().getDouble("x"), y_1 = vertex1.getData().getDouble("y");
+                    double x_2 = vertex2.getData().getDouble("x"), y_2 = vertex2.getData().getDouble("y");
+                    double x_diff = Math.pow(x_2 - x_1, 2.0), y_diff = Math.pow(y_2 - y_1, 2.0);
+                    double distance = Math.sqrt(x_diff + y_diff);
+                    if (distance <= r) { // Create vertex if distance <= radius
+                        graph.addEdge(vertex1, vertex2, new JSONObject());
+                    }
+                }
+            }
+        }
+        return graph;
+    }
+
+    // Fourth one
+    public static Graph generateBarabasiAlbertGraph(int n, double d, boolean directed, boolean selfRelated) {
+        Graph graph = new Graph(directed);
+        // Create n vertices
+        IntStream.range(0, n).forEach(i -> graph.addVertex(new Vertex(i + "", new JSONObject())));
+
+        // Create random int array from to [0,n)
+        List<Integer> arrayInt = IntStream.range(0, n).boxed().collect(Collectors.toList()); // [0,n)
+        Collections.shuffle(arrayInt); // Shuffle the array
+
+        int D = (int) d;
+        // Por definicion los primeros D vertices tienen que conectarse
+        for (int i = 0; i < D; i++) {
+            Vertex vertex1 = graph.getVertices().get(arrayInt.get(i) + "");
+            for (int j = i + 1; j < D; j++) {
+                Vertex vertex2 = graph.getVertices().get(arrayInt.get(j) + "");
+                graph.addEdge(vertex1, vertex2, new JSONObject());
+            }
+        }
+
+        /*
+         * Luego para los vertices restantes checo para los nodos anteriores si puedo
+         * conectarlos o no dependiendo de su grado
+         */
+        for (int i = D; i < n; i++) {
+            Vertex vertex1 = graph.getVertices().get(arrayInt.get(i) + "");
+            for (int j = 0; j < i; j++) {
+                Vertex vertex2 = graph.getVertices().get(arrayInt.get(j) + "");
+                int gradoNodo = graph.VertexDegree(vertex2);
+                double probabilidad = ThreadLocalRandom.current().nextDouble();
+                double p = 1 - (double) (gradoNodo / d);
+                if (probabilidad <= p) {
                     graph.addEdge(vertex1, vertex2, new JSONObject());
                 }
             }
         }
         return graph;
+    }
+
+    // To wiz file
+    public void writeToWizFile(String path, String filename) throws IOException {
+        Files.write(Paths.get(path, filename), this.toString().getBytes(), StandardOpenOption.CREATE);
     }
 
     // Getters and setters
