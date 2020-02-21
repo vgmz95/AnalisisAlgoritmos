@@ -80,16 +80,18 @@ public class Graph {
             Vertex vertex1 = graph.getVertices().get(v1 + "");
             Vertex vertex2 = graph.getVertices().get(v2 + "");
 
-            if(v1==v2&& !selfRelated){
+            if (v1 == v2 && !selfRelated) { // Same vertex
                 i--;
-            }else if(graph.existEdge(vertex1, vertex2)){
+            } else if (graph.existEdge(vertex1, vertex2)) {
                 i--;
-            }else{
+            } else {
                 graph.addEdge(vertex1, vertex2, new JSONObject());
             }
         }
         return graph;
     }
+
+    // Second one
 
     public static Graph generateGilbertGraph(int n, double p, boolean directed, boolean selfRelated) {
         Graph graph = new Graph(directed);
@@ -100,12 +102,19 @@ public class Graph {
         }
 
         // Create a vertex if random>=p
-        graph.getVertices().values().forEach((vertex) -> {
-            if (ThreadLocalRandom.current().nextDouble() > p) {
-                
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == j && !selfRelated)
+                    continue;
+                // TODO: checar si la arista ya existe
+                double random = ThreadLocalRandom.current().nextDouble();
+                if (random <= p) {
+                    Vertex vertex1 = graph.getVertices().get(i + "");
+                    Vertex vertex2 = graph.getVertices().get(j + "");
+                    graph.addEdge(vertex1, vertex2, new JSONObject());
+                }
             }
-        });
-
+        }
         return graph;
     }
 

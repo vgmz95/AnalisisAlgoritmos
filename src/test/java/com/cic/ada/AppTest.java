@@ -41,9 +41,20 @@ public class AppTest {
      */
     @Test
     public void ErdosRenyiTest() {
-        int n = 200, m= 300;
+        int n = 200, m = 300;
         Graph graph = Graph.generateErdosRenyiGraph(n, m, false, true);
         System.out.println("Graph: " + graph.toString());
 
+    }
+
+    /**
+     * Test Gilbert Graph Generation
+     */
+    @Test
+    public void GilbertTest() {
+        int n = 25;
+        double m = 0.5;
+        Graph graph = Graph.generateGilbertGraph(n, m, false, true);
+        System.out.println("Graph: " + graph.toString());
     }
 }
