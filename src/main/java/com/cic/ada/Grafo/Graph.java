@@ -140,9 +140,7 @@ public class Graph {
         for (int i = 0; i < n; i++) {
             double x = ThreadLocalRandom.current().nextDouble();
             double y = ThreadLocalRandom.current().nextDouble();
-            var info = new JSONObject();
-            info.put("x", x);
-            info.put("y", y);
+            var info = new JSONObject().put("x", x).put("y", y);
             Vertex v = new Vertex(i + "", info);
             graph.addVertex(v);
         }
