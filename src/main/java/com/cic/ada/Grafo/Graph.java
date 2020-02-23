@@ -179,7 +179,7 @@ public class Graph {
         Collections.shuffle(arrayInt); // Shuffle the array
 
         int D = (int) d;
-        // Por definicion los primeros D vertices tienen que conectarse
+        // By definition, the first D vertices have to be connected
         for (int i = 0; i < D; i++) {
             Vertex vertex1 = graph.getVertices().get(arrayInt.get(i) + "");
             for (int j = i + 1; j < D; j++) {
@@ -188,18 +188,15 @@ public class Graph {
             }
         }
 
-        /*
-         * Luego para los vertices restantes checo para los nodos anteriores si puedo
-         * conectarlos o no dependiendo de su grado
-         */
+        // After that, connect using formula p=1-deg(v)/d
         for (int i = D; i < n; i++) {
             Vertex vertex1 = graph.getVertices().get(arrayInt.get(i) + "");
             for (int j = 0; j < i; j++) {
                 Vertex vertex2 = graph.getVertices().get(arrayInt.get(j) + "");
-                int gradoNodo = graph.VertexDegree(vertex2);
-                double probabilidad = ThreadLocalRandom.current().nextDouble();
-                double p = 1 - (double) (gradoNodo / d);
-                if (probabilidad <= p) {
+                int nodeDegree = graph.VertexDegree(vertex2);
+                double random = ThreadLocalRandom.current().nextDouble();
+                double p = 1 - (double) (nodeDegree / d);
+                if (random <= p) {
                     graph.addEdge(vertex1, vertex2, new JSONObject());
                 }
             }
@@ -207,8 +204,8 @@ public class Graph {
         return graph;
     }
 
-    // To wiz file
-    public void writeToWizFile(String path, String filename) throws IOException {
+    // To file
+    public void writeToVizFile(String path, String filename) throws IOException {
         Files.write(Paths.get(path, filename), this.toString().getBytes(), StandardOpenOption.CREATE);
     }
 
