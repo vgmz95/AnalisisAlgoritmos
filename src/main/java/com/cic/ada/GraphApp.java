@@ -16,7 +16,9 @@ public class GraphApp {
         int few = 40; // Few nodes (<50)
         int many = 100; // Many nodes (<100)
         int lots = 500 ;  //Lots of nodes
-        String path="/home/victor/Documents";
+        String path="C:\\Users\\victo\\Documents\\grafos";
+        String fileExt = ".gv";
+
 
         //Erdos-Renyi
         Graph[] erdosRenyiGraphs = { 
@@ -26,7 +28,7 @@ public class GraphApp {
         };
         Stream.of(erdosRenyiGraphs).forEach(graph->{
             try {
-                graph.writeToVizFile(path, "ErdosRenyi-" + graph.getVertices().size()+".viz");
+                graph.writeToVizFile(path, "ErdosRenyi-" + graph.getVertices().size()+fileExt);
             } catch (IOException e) {                
                 e.printStackTrace();
             }
@@ -34,13 +36,13 @@ public class GraphApp {
         
         //Gilbert
         Graph[] GilbertGraphs = { 
-            Graph.generateGilbertGraph(few, 0.6, false, true), 
-            Graph.generateGilbertGraph(many, 0.4, false, true),
+            Graph.generateGilbertGraph(few, 0.3, false, true), 
+            Graph.generateGilbertGraph(many, 0.3, false, true),
             Graph.generateGilbertGraph(lots, 0.02, false, true),
         };
         Stream.of(GilbertGraphs).forEach(graph->{
             try {
-                graph.writeToVizFile(path, "Gilbert-" + graph.getVertices().size()+".viz");
+                graph.writeToVizFile(path, "Gilbert-" + graph.getVertices().size()+fileExt);
             } catch (IOException e) {                
                 e.printStackTrace();
             }
@@ -54,7 +56,7 @@ public class GraphApp {
         };
         Stream.of(GeoGraphs).forEach(graph->{
             try {
-                graph.writeToVizFile(path, "Geograph-" + graph.getVertices().size()+".viz");
+                graph.writeToVizFile(path, "Geograph-" + graph.getVertices().size()+fileExt);
             } catch (IOException e) {                
                 e.printStackTrace();
             }
@@ -68,7 +70,7 @@ public class GraphApp {
         };
         Stream.of(barabasiGraphs).forEach(graph->{
             try {
-                graph.writeToVizFile(path, "BarabasiAlbert-" + graph.getVertices().size()+".viz");
+                graph.writeToVizFile(path, "BarabasiAlbert-" + graph.getVertices().size()+fileExt);
             } catch (IOException e) {                
                 e.printStackTrace();
             }
