@@ -42,11 +42,11 @@ public class Graph {
         Edges.put(vertex1.getName(), new ArrayList<Edge>());
     }
 
-    public void addEdge(Edge edge1) {
-        if (!Edges.containsKey(edge1.Node1.getName())) {
-            Edges.put(edge1.Node1.getName(), new ArrayList<Edge>());
+    public void addEdge(Edge edge) {
+        if (!Edges.containsKey(edge.Node1.getName())) {
+            Edges.put(edge.Node1.getName(), new ArrayList<Edge>());
         }
-        Edges.get(edge1.Node1.getName()).add(edge1);
+        Edges.get(edge.Node1.getName()).add(edge);
     }
 
     public void addEdge(String id, Vertex vertex1, Vertex vertex2, JSONObject data) {
@@ -77,10 +77,11 @@ public class Graph {
     }
 
     private boolean existEdgeHelper(Vertex vertex1, Vertex vertex2) {// From Vertex1 to Vertex2
-        if (Edges.get(vertex1.getName()).isEmpty()) // Empty list
+        List<Edge> edgeList = Edges.get(vertex1.getName());
+        if (edgeList.isEmpty()) 
             return false;
         else
-            return Edges.get(vertex1.getName()).stream().anyMatch(edge -> edge.Node2.equals(vertex2));
+            return edgeList.stream().anyMatch(edge -> edge.Node2.getName().equals(vertex2.getName()));
     }
 
     public int VertexDegree(Vertex vertex) {

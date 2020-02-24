@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import com.cic.ada.Grafo.Graph;
 import com.cic.ada.Grafo.Vertex;
@@ -36,6 +37,21 @@ public class AppTest {
         graph.addVertex(vertex3);
         graph.addEdge(vertex1, vertex2, null);
         assertTrue(graph.existEdge(vertex1, vertex2));
+        assertTrue(!graph.existEdge(vertex1, vertex3));
+    }
+
+    @Test
+    public void CheckIfVertexExist() {
+        Graph graph = new Graph(false); // Not directed
+        Vertex vertex1 = new Vertex("test1", null);
+        Vertex vertex2 = new Vertex("test2", null);
+        Vertex vertex3 = new Vertex("test3", null);
+        graph.addVertex(vertex1);
+        graph.addVertex(vertex2);
+        graph.addVertex(vertex3);
+        graph.addEdge(vertex1, vertex2, null);
+        assertTrue(graph.existEdge(vertex1, vertex2));
+        assertTrue(graph.existEdge(vertex2, vertex1));
         assertTrue(!graph.existEdge(vertex1, vertex3));
     }
 
@@ -85,4 +101,71 @@ public class AppTest {
         System.out.println("Graph: \n" + graph.toString());
     }
 
+    /* Write to file tests */
+
+    int few = 40; // Few nodes (<50)
+    int many = 100; // Many nodes (<100)
+    int lots = 500; // Lots of nodes
+    String path = "C:\\Users\\victo\\Documents\\grafos";
+    String fileExt = ".gv";
+
+    @Test
+    public void ErdosRenyiFileTest() {
+        // Erdos-Renyi
+        Graph[] erdosRenyiGraphs = { Graph.generateErdosRenyiGraph(few, 100, false, false),
+                Graph.generateErdosRenyiGraph(many, 200, false, false),
+                Graph.generateErdosRenyiGraph(lots, 300, false, false), };
+        Stream.of(erdosRenyiGraphs).forEach(graph -> {
+            try {
+                graph.writeToVizFile(path, "ErdosRenyi-" + graph.getVertices().size() + fileExt);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Test
+    public void GilbertFileTest() {
+        // Gilbert
+        Graph[] GilbertGraphs = { Graph.generateGilbertGraph(few, 0.02, false, false),
+                Graph.generateGilbertGraph(many, 0.02, false, false),
+                Graph.generateGilbertGraph(lots, 0.02, false, false), };
+        Stream.of(GilbertGraphs).forEach(graph -> {
+            try {
+                graph.writeToVizFile(path, "Gilbert-" + graph.getVertices().size() + fileExt);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Test
+    public void GeographicFileTest() {
+        // Geographical
+        Graph[] GeoGraphs = { Graph.generateGeographicGraph(few, 0.5, false, false),
+                Graph.generateGeographicGraph(many, 0.2, false, false),
+                Graph.generateGeographicGraph(lots, 0.08, false, false), };
+        Stream.of(GeoGraphs).forEach(graph -> {
+            try {
+                graph.writeToVizFile(path, "Geograph-" + graph.getVertices().size() + fileExt);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Test
+    public void BarabasiAlbertFileTest() {
+        // Barabasi-Albert graphs
+        Graph[] barabasiGraphs = { Graph.generateBarabasiAlbertGraph(few, 5, false, false),
+                Graph.generateBarabasiAlbertGraph(many, 4, false, false),
+                Graph.generateBarabasiAlbertGraph(lots, 3, false, false), };
+        Stream.of(barabasiGraphs).forEach(graph -> {
+            try {
+                graph.writeToVizFile(path, "BarabasiAlbert-" + graph.getVertices().size() + fileExt);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 }
