@@ -4,8 +4,8 @@ package com.cic.ada.Grafo;
 import org.json.JSONObject;
 
 public class Vertex{
-    String name;
-    JSONObject data;
+    private String name;
+    private JSONObject data;
 
     public Vertex(String name, JSONObject data) {
         this.name = name;
@@ -52,8 +52,6 @@ public class Vertex{
             return false;
         return true;
     }
-
-
     
 
 }

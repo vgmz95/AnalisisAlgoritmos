@@ -37,6 +37,7 @@ public class AppTest {
         graph.addVertex(vertex3);
         graph.addEdge(vertex1, vertex2, null);
         assertTrue(graph.existEdge(vertex1, vertex2));
+        assertTrue(graph.existEdge(vertex2, vertex1));
         assertTrue(!graph.existEdge(vertex1, vertex3));
     }
 
@@ -87,7 +88,6 @@ public class AppTest {
         double r = 0.3;
         Graph graph = Graph.generateGeographicGraph(n, r, false, true);
         System.out.println("Graph: \n" + graph.toString());
-        graph.writeToVizFile("/home/victor/Documents", "geographic.viz");
     }
 
     /**
@@ -117,7 +117,7 @@ public class AppTest {
                 Graph.generateErdosRenyiGraph(lots, 300, false, false), };
         Stream.of(erdosRenyiGraphs).forEach(graph -> {
             try {
-                graph.writeToVizFile(path, "ErdosRenyi-" + graph.getVertices().size() + fileExt);
+                graph.writeToFile(path, "1_ErdosRenyi-" + graph.getVertices().size() + fileExt);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -132,7 +132,7 @@ public class AppTest {
                 Graph.generateGilbertGraph(lots, 0.02, false, false), };
         Stream.of(GilbertGraphs).forEach(graph -> {
             try {
-                graph.writeToVizFile(path, "Gilbert-" + graph.getVertices().size() + fileExt);
+                graph.writeToFile(path, "2_Gilbert-" + graph.getVertices().size() + fileExt);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -147,7 +147,7 @@ public class AppTest {
                 Graph.generateGeographicGraph(lots, 0.08, false, false), };
         Stream.of(GeoGraphs).forEach(graph -> {
             try {
-                graph.writeToVizFile(path, "Geograph-" + graph.getVertices().size() + fileExt);
+                graph.writeToFile(path, "3_Geograph-" + graph.getVertices().size() + fileExt);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -157,12 +157,12 @@ public class AppTest {
     @Test
     public void BarabasiAlbertFileTest() {
         // Barabasi-Albert graphs
-        Graph[] barabasiGraphs = { Graph.generateBarabasiAlbertGraph(few, 5, false, false),
-                Graph.generateBarabasiAlbertGraph(many, 4, false, false),
-                Graph.generateBarabasiAlbertGraph(lots, 3, false, false), };
+        Graph[] barabasiGraphs = { Graph.generateBarabasiAlbertGraph(few, 12, false, false),
+                Graph.generateBarabasiAlbertGraph(many, 12, false, false),
+                Graph.generateBarabasiAlbertGraph(lots, 15, false, false), };
         Stream.of(barabasiGraphs).forEach(graph -> {
             try {
-                graph.writeToVizFile(path, "BarabasiAlbert-" + graph.getVertices().size() + fileExt);
+                graph.writeToFile(path, "4_BarabasiAlbert-" + graph.getVertices().size() + fileExt);
             } catch (IOException e) {
                 e.printStackTrace();
             }

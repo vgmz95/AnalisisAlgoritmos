@@ -2,10 +2,10 @@ package com.cic.ada.Grafo;
 
 import org.json.JSONObject;
 
-class Edge {
-    String id;
-    Vertex Node1, Node2;
-    JSONObject data;
+public class Edge {
+    private String id;
+    private Vertex Node1, Node2;
+    private JSONObject data;
 
     public String getId() {
         return id;

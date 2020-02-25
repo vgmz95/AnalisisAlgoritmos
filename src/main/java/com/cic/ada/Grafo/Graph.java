@@ -3,7 +3,6 @@ package com.cic.ada.Grafo;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,9 +15,9 @@ import org.json.JSONObject;
 
 public class Graph {
 
-    HashMap<String, Vertex> Vertices;
-    HashMap<String, List<Edge>> Edges;
-    boolean directed;
+    private HashMap<String, Vertex> Vertices;
+    private HashMap<String, List<Edge>> Edges;
+    private boolean directed;
 
     public Graph() {
         this.Vertices = new HashMap<>();
@@ -42,46 +41,49 @@ public class Graph {
         Edges.put(vertex1.getName(), new ArrayList<Edge>());
     }
 
-    public void addEdge(Edge edge) {
-        if (!Edges.containsKey(edge.Node1.getName())) {
-            Edges.put(edge.Node1.getName(), new ArrayList<Edge>());
-        }
-        Edges.get(edge.Node1.getName()).add(edge);
-    }
-
     public void addEdge(String id, Vertex vertex1, Vertex vertex2, JSONObject data) {
         Edge edge = new Edge(id, vertex1, vertex2, data);
         this.addEdge(edge);
     }
 
     public void addEdge(Vertex vertex1, Vertex vertex2, JSONObject data) {
-        String id;
-        if (directed)
-            id = vertex1.getName() + "->" + vertex2.getName();
-        else
-            id = vertex1.getName() + "--" + vertex2.getName();
+        String id = generateEdgeId(vertex1, vertex2);
         Edge edge = new Edge(id, vertex1, vertex2, data);
         this.addEdge(edge);
     }
 
-    public boolean existEdge(Vertex vertex1, Vertex vertex2) {
-        // If directed
-        // return from vertex1->vertex2
-        if (directed)
-            return existEdgeHelper(vertex1, vertex2);
-
-        // if not directed
-        // return from vertex1->vertex2 OR vertex2->vertex1
-        else
-            return existEdgeHelper(vertex1, vertex2) || existEdgeHelper(vertex2, vertex1);
+    public void addEdge(Edge edge) {
+        this.addEdgeHelper(edge);
+        if (!directed) {
+            this.addEdgeHelper(this.generateReverseEdge(edge)); // If it is not directed, add the reverse Edge
+        }
     }
 
-    private boolean existEdgeHelper(Vertex vertex1, Vertex vertex2) {// From Vertex1 to Vertex2
+    public void addEdgeHelper(Edge edge) {
+        Edges.get(edge.getNode1().getName()).add(edge);
+    }
+
+    private Edge generateReverseEdge(Edge edge) {
+        Vertex vertex1 = edge.getNode2();
+        Vertex vertex2 = edge.getNode1();
+        JSONObject data = edge.getData();
+        String id = generateEdgeId(vertex1, vertex2);
+        return new Edge(id, vertex1, vertex2, data);
+    }
+
+    private String generateEdgeId(Vertex vertex1, Vertex vertex2) {
+        if (directed)
+            return vertex1.getName() + "->" + vertex2.getName();
+        else
+            return vertex1.getName() + "--" + vertex2.getName();
+    }
+
+    public boolean existEdge(Vertex vertex1, Vertex vertex2) {
         List<Edge> edgeList = Edges.get(vertex1.getName());
-        if (edgeList.isEmpty()) 
+        if (edgeList.isEmpty())
             return false;
         else
-            return edgeList.stream().anyMatch(edge -> edge.Node2.getName().equals(vertex2.getName()));
+            return edgeList.stream().anyMatch(edge -> edge.getNode2().equals(vertex2));
     }
 
     public int VertexDegree(Vertex vertex) {
@@ -137,14 +139,14 @@ public class Graph {
     // Third one
     public static Graph generateGeographicGraph(int n, double r, boolean directed, boolean selfRelated) {
         Graph graph = new Graph(directed);
+
         // Create n vertices
-        for (int i = 0; i < n; i++) {
+        IntStream.range(0, n).forEach(i -> {
             double x = ThreadLocalRandom.current().nextDouble();
             double y = ThreadLocalRandom.current().nextDouble();
             JSONObject info = new JSONObject().put("x", x).put("y", y);
-            Vertex v = new Vertex(i + "", info);
-            graph.addVertex(v);
-        }
+            graph.addVertex(new Vertex(i + "", info));
+        });
 
         // Create an edge if random>=p
         for (int i = 0; i < n; i++) {
@@ -183,7 +185,7 @@ public class Graph {
         // By definition, the first D vertices have to be connected
         for (int i = 0; i < D; i++) {
             Vertex vertex1 = graph.getVertices().get(arrayInt.get(i) + "");
-            for (int j = i + 1; j < D; j++) {
+            for (int j = i + 1; j < D; j++) {               
                 Vertex vertex2 = graph.getVertices().get(arrayInt.get(j) + "");
                 graph.addEdge(vertex1, vertex2, new JSONObject());
             }
@@ -192,7 +194,7 @@ public class Graph {
         // After that, connect using formula p=1-deg(v)/d
         for (int i = D; i < n; i++) {
             Vertex vertex1 = graph.getVertices().get(arrayInt.get(i) + "");
-            for (int j = 0; j < i; j++) {
+            for (int j = 0; j < i; j++) {                
                 Vertex vertex2 = graph.getVertices().get(arrayInt.get(j) + "");
                 int nodeDegree = graph.VertexDegree(vertex2);
                 double random = ThreadLocalRandom.current().nextDouble();
@@ -206,8 +208,8 @@ public class Graph {
     }
 
     // To file
-    public void writeToVizFile(String path, String filename) throws IOException {
-        Files.write(Paths.get(path, filename), this.toString().getBytes(), StandardOpenOption.CREATE);
+    public void writeToFile(String path, String filename) throws IOException {
+        Files.write(Paths.get(path, filename), this.toString().getBytes());
     }
 
     // Getters and setters
@@ -242,7 +244,7 @@ public class Graph {
             str.append("digraph G{\n");
         else
             str.append("graph G{\n");
-        this.Edges.values().forEach((edgeList) -> edgeList.forEach((edge) -> str.append(edge.id).append(";\n")));
+        this.Edges.values().forEach((edgeList) -> edgeList.forEach((edge) -> str.append(edge.getId()).append(";\n")));
         str.append("}");
         return str.toString();
     }

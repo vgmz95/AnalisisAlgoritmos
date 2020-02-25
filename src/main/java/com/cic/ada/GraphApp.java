@@ -24,7 +24,7 @@ public class GraphApp {
                 Graph.generateErdosRenyiGraph(lots, 700, false, false), };
         Stream.of(erdosRenyiGraphs).forEach(graph -> {
             try {
-                graph.writeToVizFile(path, "ErdosRenyi-" + graph.getVertices().size() + fileExt);
+                graph.writeToFile(path, "ErdosRenyi-" + graph.getVertices().size() + fileExt);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -36,7 +36,7 @@ public class GraphApp {
                 Graph.generateGilbertGraph(lots, 0.02, false, false), };
         Stream.of(GilbertGraphs).forEach(graph -> {
             try {
-                graph.writeToVizFile(path, "Gilbert-" + graph.getVertices().size() + fileExt);
+                graph.writeToFile(path, "Gilbert-" + graph.getVertices().size() + fileExt);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -48,7 +48,7 @@ public class GraphApp {
                 Graph.generateGeographicGraph(lots, 0.08, false, false), };
         Stream.of(GeoGraphs).forEach(graph -> {
             try {
-                graph.writeToVizFile(path, "Geograph-" + graph.getVertices().size() + fileExt);
+                graph.writeToFile(path, "Geograph-" + graph.getVertices().size() + fileExt);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -60,7 +60,7 @@ public class GraphApp {
                 Graph.generateBarabasiAlbertGraph(lots, 3, false, false), };
         Stream.of(barabasiGraphs).forEach(graph -> {
             try {
-                graph.writeToVizFile(path, "BarabasiAlbert-" + graph.getVertices().size() + fileExt);
+                graph.writeToFile(path, "BarabasiAlbert-" + graph.getVertices().size() + fileExt);
             } catch (IOException e) {
                 e.printStackTrace();
             }
