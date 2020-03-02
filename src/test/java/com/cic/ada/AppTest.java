@@ -103,7 +103,7 @@ public class AppTest {
 
     /* Write to file tests */
 
-    int few = 40; // Few nodes (<50)
+    int few = 30; // Few nodes (<50)
     int many = 100; // Many nodes (<100)
     int lots = 500; // Lots of nodes
     String path = "C:\\Users\\victo\\Documents\\grafos";
