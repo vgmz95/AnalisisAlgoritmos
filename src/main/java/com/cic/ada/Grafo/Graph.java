@@ -102,8 +102,8 @@ public class Graph {
         for (int i = 0; i < m; i++) {
             int v1 = ThreadLocalRandom.current().nextInt(n);
             int v2 = ThreadLocalRandom.current().nextInt(n);
-            Vertex vertex1 = graph.getVertex(v1 + "");
-            Vertex vertex2 = graph.getVertex(v2 + "");
+            Vertex vertex1 = graph.getVertexByName(v1 + "");
+            Vertex vertex2 = graph.getVertexByName(v2 + "");
             if (v1 == v2 && !selfRelated) { // Same vertex
                 i--;
             } else if (graph.existEdge(vertex1, vertex2)) {
@@ -128,8 +128,8 @@ public class Graph {
                     continue;
                 double random = ThreadLocalRandom.current().nextDouble();
                 if (random <= p) {
-                    Vertex vertex1 = graph.getVertex(i + "");
-                    Vertex vertex2 = graph.getVertex(j + "");
+                    Vertex vertex1 = graph.getVertexByName(i + "");
+                    Vertex vertex2 = graph.getVertexByName(j + "");
                     if (!graph.existEdge(vertex1, vertex2))
                         graph.addEdge(vertex1, vertex2, new JSONObject());
                 }
@@ -156,8 +156,8 @@ public class Graph {
                 if (i == j && !selfRelated) // Same vertex
                     continue;
 
-                Vertex vertex1 = graph.getVertex(i + "");
-                Vertex vertex2 = graph.getVertex(j + "");
+                Vertex vertex1 = graph.getVertexByName(i + "");
+                Vertex vertex2 = graph.getVertexByName(j + "");
                 if (!graph.existEdge(vertex1, vertex2)) {
                     // Calculate distance
                     double x_1 = vertex1.getData().getDouble("x"), y_1 = vertex1.getData().getDouble("y");
@@ -186,18 +186,18 @@ public class Graph {
         int D = (int) d;
         // By definition, the first D vertices have to be connected
         for (int i = 0; i < D; i++) {
-            Vertex vertex1 = graph.getVertex(arrayInt.get(i) + "");
+            Vertex vertex1 = graph.getVertexByName(arrayInt.get(i) + "");;;;
             for (int j = i + 1; j < D; j++) {               
-                Vertex vertex2 = graph.getVertex(arrayInt.get(j) + "");
+                Vertex vertex2 = graph.getVertexByName(arrayInt.get(j) + "");
                 graph.addEdge(vertex1, vertex2, new JSONObject());
             }
         }
 
         // After that, connect using formula p=1-deg(v)/d
         for (int i = D; i < n; i++) {
-            Vertex vertex1 = graph.getVertex(arrayInt.get(i) + "");
+            Vertex vertex1 = graph.getVertexByName(arrayInt.get(i) + "");
             for (int j = 0; j < i; j++) {                
-                Vertex vertex2 = graph.getVertex(arrayInt.get(j) + "");
+                Vertex vertex2 = graph.getVertexByName(arrayInt.get(j) + "");
                 int nodeDegree = graph.VertexDegree(vertex2);
                 double random = ThreadLocalRandom.current().nextDouble();
                 double p = 1 - (double) (nodeDegree / d);
@@ -218,7 +218,7 @@ public class Graph {
             data.put("distance", Integer.MAX_VALUE);
             data.put("parent", "NIL"); 
         });
-        Vertex s = getVertex(source.getName());
+        Vertex s = getVertexByName(source.getName());
         s.getData().put("color", "GRAY");
         s.getData().put("distance", 0);
 
@@ -248,7 +248,7 @@ public class Graph {
         return vertices;
     }
 
-    public Vertex getVertex(String name){
+    public Vertex getVertexByName(String name){
         return vertices.get(name);
     }
 
