@@ -6,5 +6,5 @@
         "**/.factorypath": true
     },
     "java.configuration.updateBuildConfiguration": "interactive",
-    "java.checkstyle.configuration": "${workspaceFolder}\\google_checks.xml"
+    "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
 }

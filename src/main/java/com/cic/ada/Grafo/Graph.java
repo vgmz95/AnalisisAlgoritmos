@@ -12,7 +12,6 @@ import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import org.json.JSONObject;
 
 public class Graph {
@@ -186,8 +185,11 @@ public class Graph {
         int D = (int) d;
         // By definition, the first D vertices have to be connected
         for (int i = 0; i < D; i++) {
-            Vertex vertex1 = graph.getVertexByName(arrayInt.get(i) + "");;;;
-            for (int j = i + 1; j < D; j++) {               
+            Vertex vertex1 = graph.getVertexByName(arrayInt.get(i) + "");
+            ;
+            ;
+            ;
+            for (int j = i + 1; j < D; j++) {
                 Vertex vertex2 = graph.getVertexByName(arrayInt.get(j) + "");
                 graph.addEdge(vertex1, vertex2, new JSONObject());
             }
@@ -196,7 +198,7 @@ public class Graph {
         // After that, connect using formula p=1-deg(v)/d
         for (int i = D; i < n; i++) {
             Vertex vertex1 = graph.getVertexByName(arrayInt.get(i) + "");
-            for (int j = 0; j < i; j++) {                
+            for (int j = 0; j < i; j++) {
                 Vertex vertex2 = graph.getVertexByName(arrayInt.get(j) + "");
                 int nodeDegree = graph.VertexDegree(vertex2);
                 double random = ThreadLocalRandom.current().nextDouble();
@@ -209,14 +211,13 @@ public class Graph {
         return graph;
     }
 
-    
-    public Graph BFS(Vertex source){
+    public Graph BFS(Vertex source) {
 
-        vertices.values().forEach(vertex ->{
+        vertices.values().forEach(vertex -> {
             JSONObject data = new JSONObject();
             data.put("color", "WHITE");
             data.put("distance", Integer.MAX_VALUE);
-            data.put("parent", "NIL"); 
+            data.put("parent", "NIL");
         });
         Vertex s = getVertexByName(source.getName());
         s.getData().put("color", "GRAY");
@@ -224,14 +225,13 @@ public class Graph {
 
         Queue<Vertex> q = new LinkedList<>();
         q.add(s);
-        
-        while(!q.isEmpty()){
+
+        while (!q.isEmpty()) {
             List<Edge> adjList = edges.get(q.poll().getName());
-            adjList.forEach(edge->{
-                //if edge.
+            adjList.forEach(edge -> {
+                // if edge.
 
             });
-
 
         }
 
@@ -248,7 +248,7 @@ public class Graph {
         return vertices;
     }
 
-    public Vertex getVertexByName(String name){
+    public Vertex getVertexByName(String name) {
         return vertices.get(name);
     }
 
