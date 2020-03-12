@@ -6,7 +6,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -42,13 +44,13 @@ public class Graph {
     }
 
     public void addEdge(String id, Vertex vertex1, Vertex vertex2, JSONObject data) {
-        Edge edge = new Edge(id, vertex1, vertex2, data);
+        Edge edge = new Edge(id, vertex1.getName(), vertex2.getName(), data);
         this.addEdge(edge);
     }
 
     public void addEdge(Vertex vertex1, Vertex vertex2, JSONObject data) {
-        String id = generateEdgeId(vertex1, vertex2);
-        Edge edge = new Edge(id, vertex1, vertex2, data);
+        String id = generateEdgeId(vertex1.getName(), vertex2.getName());
+        Edge edge = new Edge(id, vertex1.getName(), vertex2.getName(), data);
         this.addEdge(edge);
     }
 
@@ -60,22 +62,22 @@ public class Graph {
     }
 
     public void addEdgeHelper(Edge edge) {
-        Edges.get(edge.getNode1().getName()).add(edge);
+        Edges.get(edge.getNode1Name()).add(edge);
     }
 
     private Edge generateReverseEdge(Edge edge) {
-        Vertex vertex1 = edge.getNode2();
-        Vertex vertex2 = edge.getNode1();
+        String vertex1 = edge.getNode2Name();
+        String vertex2 = edge.getNode1Name();
         JSONObject data = edge.getData();
         String id = generateEdgeId(vertex1, vertex2);
         return new Edge(id, vertex1, vertex2, data);
     }
 
-    private String generateEdgeId(Vertex vertex1, Vertex vertex2) {
+    private String generateEdgeId(String vertex1, String vertex2) {
         if (directed)
-            return vertex1.getName() + "->" + vertex2.getName();
+            return vertex1 + "->" + vertex2;
         else
-            return vertex1.getName() + "--" + vertex2.getName();
+            return vertex1 + "--" + vertex2;
     }
 
     public boolean existEdge(Vertex vertex1, Vertex vertex2) {
@@ -83,7 +85,7 @@ public class Graph {
         if (edgeList.isEmpty())
             return false;
         else
-            return edgeList.stream().anyMatch(edge -> edge.getNode2().equals(vertex2));
+            return edgeList.stream().anyMatch(edge -> edge.getNode2Name().equals(vertex2.getName()));
     }
 
     public int VertexDegree(Vertex vertex) {
@@ -100,8 +102,8 @@ public class Graph {
         for (int i = 0; i < m; i++) {
             int v1 = ThreadLocalRandom.current().nextInt(n);
             int v2 = ThreadLocalRandom.current().nextInt(n);
-            Vertex vertex1 = graph.getVertices().get(v1 + "");
-            Vertex vertex2 = graph.getVertices().get(v2 + "");
+            Vertex vertex1 = graph.getVertex(v1 + "");
+            Vertex vertex2 = graph.getVertex(v2 + "");
             if (v1 == v2 && !selfRelated) { // Same vertex
                 i--;
             } else if (graph.existEdge(vertex1, vertex2)) {
@@ -126,8 +128,8 @@ public class Graph {
                     continue;
                 double random = ThreadLocalRandom.current().nextDouble();
                 if (random <= p) {
-                    Vertex vertex1 = graph.getVertices().get(i + "");
-                    Vertex vertex2 = graph.getVertices().get(j + "");
+                    Vertex vertex1 = graph.getVertex(i + "");
+                    Vertex vertex2 = graph.getVertex(j + "");
                     if (!graph.existEdge(vertex1, vertex2))
                         graph.addEdge(vertex1, vertex2, new JSONObject());
                 }
@@ -154,8 +156,8 @@ public class Graph {
                 if (i == j && !selfRelated) // Same vertex
                     continue;
 
-                Vertex vertex1 = graph.getVertices().get(i + "");
-                Vertex vertex2 = graph.getVertices().get(j + "");
+                Vertex vertex1 = graph.getVertex(i + "");
+                Vertex vertex2 = graph.getVertex(j + "");
                 if (!graph.existEdge(vertex1, vertex2)) {
                     // Calculate distance
                     double x_1 = vertex1.getData().getDouble("x"), y_1 = vertex1.getData().getDouble("y");
@@ -184,18 +186,18 @@ public class Graph {
         int D = (int) d;
         // By definition, the first D vertices have to be connected
         for (int i = 0; i < D; i++) {
-            Vertex vertex1 = graph.getVertices().get(arrayInt.get(i) + "");
+            Vertex vertex1 = graph.getVertex(arrayInt.get(i) + "");
             for (int j = i + 1; j < D; j++) {               
-                Vertex vertex2 = graph.getVertices().get(arrayInt.get(j) + "");
+                Vertex vertex2 = graph.getVertex(arrayInt.get(j) + "");
                 graph.addEdge(vertex1, vertex2, new JSONObject());
             }
         }
 
         // After that, connect using formula p=1-deg(v)/d
         for (int i = D; i < n; i++) {
-            Vertex vertex1 = graph.getVertices().get(arrayInt.get(i) + "");
+            Vertex vertex1 = graph.getVertex(arrayInt.get(i) + "");
             for (int j = 0; j < i; j++) {                
-                Vertex vertex2 = graph.getVertices().get(arrayInt.get(j) + "");
+                Vertex vertex2 = graph.getVertex(arrayInt.get(j) + "");
                 int nodeDegree = graph.VertexDegree(vertex2);
                 double random = ThreadLocalRandom.current().nextDouble();
                 double p = 1 - (double) (nodeDegree / d);
@@ -207,6 +209,35 @@ public class Graph {
         return graph;
     }
 
+    
+    public Graph BFS(Vertex source){
+
+        Vertices.values().forEach(vertex ->{
+            JSONObject data = new JSONObject();
+            data.put("color", "WHITE");
+            data.put("distance", Integer.MAX_VALUE);
+            data.put("parent", "NIL"); 
+        });
+        Vertex s = getVertex(source.getName());
+        s.getData().put("color", "GRAY");
+        s.getData().put("distance", 0);
+
+        Queue<Vertex> q = new LinkedList<>();
+        q.add(s);
+        
+        while(!q.isEmpty()){
+            List<Edge> adjList = Edges.get(q.poll().getName());
+            adjList.forEach(edge->{
+                //if edge.
+
+            });
+
+
+        }
+
+        return null;
+    }
+
     // To file
     public void writeToFile(String path, String filename) throws IOException {
         Files.write(Paths.get(path, filename), this.toString().getBytes());
@@ -215,6 +246,10 @@ public class Graph {
     // Getters and setters
     public HashMap<String, Vertex> getVertices() {
         return Vertices;
+    }
+
+    public Vertex getVertex(String name){
+        return Vertices.get(name);
     }
 
     public void setVertices(HashMap<String, Vertex> vertices) {

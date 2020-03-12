@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 public class Edge {
     private String id;
-    private Vertex Node1, Node2;
+    private String node1Name, node2Name;
     private JSONObject data;
 
     public String getId() {
@@ -15,20 +15,20 @@ public class Edge {
         this.id = id;
     }
 
-    public Vertex getNode1() {
-        return Node1;
+    public String getNode1Name() {
+        return node1Name;
     }
 
-    public void setNode1(Vertex node1) {
-        Node1 = node1;
+    public void setNode1Name(String node1Name) {
+        this.node1Name = node1Name;
     }
 
-    public Vertex getNode2() {
-        return Node2;
+    public String getNode2Name() {
+        return node2Name;
     }
 
-    public void setNode2(Vertex node2) {
-        Node2 = node2;
+    public void setNode2Name(String node2) {
+        this.node2Name = node2;
     }
 
     public JSONObject getData() {
@@ -39,10 +39,10 @@ public class Edge {
         this.data = data;
     }
 
-    public Edge(String id, Vertex node1, Vertex node2, JSONObject data) {
+    public Edge(String id, String node1Name, String node2Name, JSONObject data) {
         this.id = id;
-        Node1 = node1;
-        Node2 = node2;
+        this.node1Name = node1Name;
+        this.node2Name = node2Name;
         this.data = data;
     }
 
@@ -50,8 +50,8 @@ public class Edge {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((Node1 == null) ? 0 : Node1.hashCode());
-        result = prime * result + ((Node2 == null) ? 0 : Node2.hashCode());
+        result = prime * result + ((node1Name == null) ? 0 : node1Name.hashCode());
+        result = prime * result + ((node2Name == null) ? 0 : node2Name.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
@@ -65,15 +65,15 @@ public class Edge {
         if (getClass() != obj.getClass())
             return false;
         Edge other = (Edge) obj;
-        if (Node1 == null) {
-            if (other.Node1 != null)
+        if (node1Name == null) {
+            if (other.node1Name != null)
                 return false;
-        } else if (!Node1.equals(other.Node1))
+        } else if (!node1Name.equals(other.node1Name))
             return false;
-        if (Node2 == null) {
-            if (other.Node2 != null)
+        if (node2Name == null) {
+            if (other.node2Name != null)
                 return false;
-        } else if (!Node2.equals(other.Node2))
+        } else if (!node2Name.equals(other.node2Name))
             return false;
         if (id == null) {
             if (other.id != null)
@@ -81,7 +81,7 @@ public class Edge {
         } else if (!id.equals(other.id))
             return false;
         return true;
-    }
+    }  
 
     
 }
