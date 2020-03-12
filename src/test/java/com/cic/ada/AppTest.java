@@ -112,9 +112,9 @@ public class AppTest {
     @Test
     public void ErdosRenyiFileTest() {
         // Erdos-Renyi
-        Graph[] erdosRenyiGraphs = { Graph.generateErdosRenyiGraph(few, 100, false, false),
+        Graph[] erdosRenyiGraphs = {Graph.generateErdosRenyiGraph(few, 100, false, false),
                 Graph.generateErdosRenyiGraph(many, 200, false, false),
-                Graph.generateErdosRenyiGraph(lots, 300, false, false), };
+                Graph.generateErdosRenyiGraph(lots, 300, false, false),};
         Stream.of(erdosRenyiGraphs).forEach(graph -> {
             try {
                 graph.writeToFile(path, "1_ErdosRenyi-" + graph.getVertices().size() + fileExt);
@@ -127,9 +127,9 @@ public class AppTest {
     @Test
     public void GilbertFileTest() {
         // Gilbert
-        Graph[] GilbertGraphs = { Graph.generateGilbertGraph(few, 0.02, false, false),
+        Graph[] GilbertGraphs = {Graph.generateGilbertGraph(few, 0.02, false, false),
                 Graph.generateGilbertGraph(many, 0.02, false, false),
-                Graph.generateGilbertGraph(lots, 0.02, false, false), };
+                Graph.generateGilbertGraph(lots, 0.02, false, false),};
         Stream.of(GilbertGraphs).forEach(graph -> {
             try {
                 graph.writeToFile(path, "2_Gilbert-" + graph.getVertices().size() + fileExt);
@@ -142,9 +142,9 @@ public class AppTest {
     @Test
     public void GeographicFileTest() {
         // Geographical
-        Graph[] GeoGraphs = { Graph.generateGeographicGraph(few, 0.5, false, false),
+        Graph[] GeoGraphs = {Graph.generateGeographicGraph(few, 0.5, false, false),
                 Graph.generateGeographicGraph(many, 0.2, false, false),
-                Graph.generateGeographicGraph(lots, 0.08, false, false), };
+                Graph.generateGeographicGraph(lots, 0.08, false, false),};
         Stream.of(GeoGraphs).forEach(graph -> {
             try {
                 graph.writeToFile(path, "3_Geograph-" + graph.getVertices().size() + fileExt);
@@ -157,9 +157,9 @@ public class AppTest {
     @Test
     public void BarabasiAlbertFileTest() {
         // Barabasi-Albert graphs
-        Graph[] barabasiGraphs = { Graph.generateBarabasiAlbertGraph(few, 12, false, false),
+        Graph[] barabasiGraphs = {Graph.generateBarabasiAlbertGraph(few, 12, false, false),
                 Graph.generateBarabasiAlbertGraph(many, 12, false, false),
-                Graph.generateBarabasiAlbertGraph(lots, 15, false, false), };
+                Graph.generateBarabasiAlbertGraph(lots, 15, false, false),};
         Stream.of(barabasiGraphs).forEach(graph -> {
             try {
                 graph.writeToFile(path, "4_BarabasiAlbert-" + graph.getVertices().size() + fileExt);

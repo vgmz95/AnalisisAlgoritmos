@@ -31,7 +31,8 @@ public class Graph {
         this.directed = directed;
     }
 
-    public Graph(HashMap<String, Vertex> vertices, HashMap<String, List<Edge>> edges, boolean directed) {
+    public Graph(HashMap<String, Vertex> vertices, HashMap<String, List<Edge>> edges,
+            boolean directed) {
         this.vertices = vertices;
         this.edges = edges;
         this.directed = directed;
@@ -56,7 +57,8 @@ public class Graph {
     public void addEdge(Edge edge) {
         this.addEdgeHelper(edge);
         if (!directed) {
-            this.addEdgeHelper(this.generateReverseEdge(edge)); // If it is not directed, add the reverse Edge
+            this.addEdgeHelper(this.generateReverseEdge(edge)); // If it is not directed, add the
+                                                                // reverse Edge
         }
     }
 
@@ -84,7 +86,8 @@ public class Graph {
         if (edgeList.isEmpty())
             return false;
         else
-            return edgeList.stream().anyMatch(edge -> edge.getNode2Name().equals(vertex2.getName()));
+            return edgeList.stream()
+                    .anyMatch(edge -> edge.getNode2Name().equals(vertex2.getName()));
     }
 
     public int VertexDegree(Vertex vertex) {
@@ -92,7 +95,8 @@ public class Graph {
     }
 
     // First one
-    public static Graph generateErdosRenyiGraph(int n, int m, boolean directed, boolean selfRelated) {
+    public static Graph generateErdosRenyiGraph(int n, int m, boolean directed,
+            boolean selfRelated) {
         Graph graph = new Graph(directed);
         // Create n vertices
         IntStream.range(0, n).forEach(i -> graph.addVertex(new Vertex(i + "", new JSONObject())));
@@ -115,7 +119,8 @@ public class Graph {
     }
 
     // Second one
-    public static Graph generateGilbertGraph(int n, double p, boolean directed, boolean selfRelated) {
+    public static Graph generateGilbertGraph(int n, double p, boolean directed,
+            boolean selfRelated) {
         Graph graph = new Graph(directed);
         // Create n vertices
         IntStream.range(0, n).forEach(i -> graph.addVertex(new Vertex(i + "", new JSONObject())));
@@ -138,7 +143,8 @@ public class Graph {
     }
 
     // Third one
-    public static Graph generateGeographicGraph(int n, double r, boolean directed, boolean selfRelated) {
+    public static Graph generateGeographicGraph(int n, double r, boolean directed,
+            boolean selfRelated) {
         Graph graph = new Graph(directed);
 
         // Create n vertices
@@ -159,8 +165,10 @@ public class Graph {
                 Vertex vertex2 = graph.getVertexByName(j + "");
                 if (!graph.existEdge(vertex1, vertex2)) {
                     // Calculate distance
-                    double x_1 = vertex1.getData().getDouble("x"), y_1 = vertex1.getData().getDouble("y");
-                    double x_2 = vertex2.getData().getDouble("x"), y_2 = vertex2.getData().getDouble("y");
+                    double x_1 = vertex1.getData().getDouble("x"),
+                            y_1 = vertex1.getData().getDouble("y");
+                    double x_2 = vertex2.getData().getDouble("x"),
+                            y_2 = vertex2.getData().getDouble("y");
                     double x_diff = Math.pow(x_2 - x_1, 2.0), y_diff = Math.pow(y_2 - y_1, 2.0);
                     double distance = Math.sqrt(x_diff + y_diff);
                     if (distance <= r) { // Create vertex if distance <= radius
@@ -173,7 +181,8 @@ public class Graph {
     }
 
     // Fourth one
-    public static Graph generateBarabasiAlbertGraph(int n, double d, boolean directed, boolean selfRelated) {
+    public static Graph generateBarabasiAlbertGraph(int n, double d, boolean directed,
+            boolean selfRelated) {
         Graph graph = new Graph(directed);
         // Create n vertices
         IntStream.range(0, n).forEach(i -> graph.addVertex(new Vertex(i + "", new JSONObject())));
@@ -185,10 +194,7 @@ public class Graph {
         int D = (int) d;
         // By definition, the first D vertices have to be connected
         for (int i = 0; i < D; i++) {
-            Vertex vertex1 = graph.getVertexByName(arrayInt.get(i) + "");
-            ;
-            ;
-            ;
+            Vertex vertex1 = graph.getVertexByName(arrayInt.get(i) + "");;;;
             for (int j = i + 1; j < D; j++) {
                 Vertex vertex2 = graph.getVertexByName(arrayInt.get(j) + "");
                 graph.addEdge(vertex1, vertex2, new JSONObject());
@@ -279,7 +285,8 @@ public class Graph {
             str.append("digraph G{\n");
         else
             str.append("graph G{\n");
-        this.edges.values().forEach((edgeList) -> edgeList.forEach((edge) -> str.append(edge.getId()).append(";\n")));
+        this.edges.values().forEach(
+                (edgeList) -> edgeList.forEach((edge) -> str.append(edge.getId()).append(";\n")));
         str.append("}");
         return str.toString();
     }
