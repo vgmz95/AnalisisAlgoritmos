@@ -17,30 +17,30 @@ import org.json.JSONObject;
 
 public class Graph {
 
-    private HashMap<String, Vertex> Vertices;
-    private HashMap<String, List<Edge>> Edges;
+    private HashMap<String, Vertex> vertices;
+    private HashMap<String, List<Edge>> edges;
     private boolean directed;
 
     public Graph() {
-        this.Vertices = new HashMap<>();
-        this.Edges = new HashMap<>();
+        this.vertices = new HashMap<>();
+        this.edges = new HashMap<>();
     }
 
     public Graph(boolean directed) {
-        this.Vertices = new HashMap<>();
-        this.Edges = new HashMap<>();
+        this.vertices = new HashMap<>();
+        this.edges = new HashMap<>();
         this.directed = directed;
     }
 
     public Graph(HashMap<String, Vertex> vertices, HashMap<String, List<Edge>> edges, boolean directed) {
-        Vertices = vertices;
-        Edges = edges;
+        this.vertices = vertices;
+        this.edges = edges;
         this.directed = directed;
     }
 
     public void addVertex(Vertex vertex1) {
-        Vertices.put(vertex1.getName(), vertex1);
-        Edges.put(vertex1.getName(), new ArrayList<Edge>());
+        vertices.put(vertex1.getName(), vertex1);
+        edges.put(vertex1.getName(), new ArrayList<Edge>());
     }
 
     public void addEdge(String id, Vertex vertex1, Vertex vertex2, JSONObject data) {
@@ -62,7 +62,7 @@ public class Graph {
     }
 
     public void addEdgeHelper(Edge edge) {
-        Edges.get(edge.getNode1Name()).add(edge);
+        edges.get(edge.getNode1Name()).add(edge);
     }
 
     private Edge generateReverseEdge(Edge edge) {
@@ -81,7 +81,7 @@ public class Graph {
     }
 
     public boolean existEdge(Vertex vertex1, Vertex vertex2) {
-        List<Edge> edgeList = Edges.get(vertex1.getName());
+        List<Edge> edgeList = edges.get(vertex1.getName());
         if (edgeList.isEmpty())
             return false;
         else
@@ -89,7 +89,7 @@ public class Graph {
     }
 
     public int VertexDegree(Vertex vertex) {
-        return Edges.get(vertex.getName()).size();
+        return edges.get(vertex.getName()).size();
     }
 
     // First one
@@ -212,7 +212,7 @@ public class Graph {
     
     public Graph BFS(Vertex source){
 
-        Vertices.values().forEach(vertex ->{
+        vertices.values().forEach(vertex ->{
             JSONObject data = new JSONObject();
             data.put("color", "WHITE");
             data.put("distance", Integer.MAX_VALUE);
@@ -226,7 +226,7 @@ public class Graph {
         q.add(s);
         
         while(!q.isEmpty()){
-            List<Edge> adjList = Edges.get(q.poll().getName());
+            List<Edge> adjList = edges.get(q.poll().getName());
             adjList.forEach(edge->{
                 //if edge.
 
@@ -245,23 +245,23 @@ public class Graph {
 
     // Getters and setters
     public HashMap<String, Vertex> getVertices() {
-        return Vertices;
+        return vertices;
     }
 
     public Vertex getVertex(String name){
-        return Vertices.get(name);
+        return vertices.get(name);
     }
 
     public void setVertices(HashMap<String, Vertex> vertices) {
-        Vertices = vertices;
+        this.vertices = vertices;
     }
 
     public HashMap<String, List<Edge>> getEdges() {
-        return Edges;
+        return edges;
     }
 
     public void setEdges(HashMap<String, List<Edge>> edges) {
-        Edges = edges;
+        this.edges = edges;
     }
 
     public boolean isDirected() {
@@ -279,7 +279,7 @@ public class Graph {
             str.append("digraph G{\n");
         else
             str.append("graph G{\n");
-        this.Edges.values().forEach((edgeList) -> edgeList.forEach((edge) -> str.append(edge.getId()).append(";\n")));
+        this.edges.values().forEach((edgeList) -> edgeList.forEach((edge) -> str.append(edge.getId()).append(";\n")));
         str.append("}");
         return str.toString();
     }
