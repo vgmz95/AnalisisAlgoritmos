@@ -7,6 +7,11 @@ public class Vertex{
     private String name;
     private JSONObject data;
 
+    public Vertex(String name) {
+        this.name = name;
+        this.data = new JSONObject();
+    }
+
     public Vertex(String name, JSONObject data) {
         this.name = name;
         this.data = data;
@@ -52,6 +57,11 @@ public class Vertex{
             return false;
         return true;
     }
+
+    //Layer for BFS
+    public int getLayer(){
+        return this.getData().optInt("distance", -1);
+    }   
     
 
 }

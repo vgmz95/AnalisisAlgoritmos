@@ -8,7 +8,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
+import java.util.Stack;
+import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -49,6 +52,14 @@ public class Graph {
     }
 
     public void addEdge(Vertex vertex1, Vertex vertex2, JSONObject data) {
+        if (!vertices.containsKey(vertex1.getName())) {
+            addVertex(vertex1);
+        }
+
+        if (!vertices.containsKey(vertex2.getName())) {
+            addVertex(vertex2);
+        }
+
         String id = generateEdgeId(vertex1.getName(), vertex2.getName());
         Edge edge = new Edge(id, vertex1.getName(), vertex2.getName(), data);
         this.addEdge(edge);
@@ -57,8 +68,8 @@ public class Graph {
     public void addEdge(Edge edge) {
         this.addEdgeHelper(edge);
         if (!directed) {
-            this.addEdgeHelper(this.generateReverseEdge(edge)); // If it is not directed, add the
-                                                                // reverse Edge
+            // If it is not directed, add the reverse Edge
+            this.addEdgeHelper(this.generateReverseEdge(edge));
         }
     }
 
@@ -218,30 +229,98 @@ public class Graph {
     }
 
     public Graph BFS(Vertex source) {
+        Graph g = new Graph(false);
 
-        vertices.values().forEach(vertex -> {
-            JSONObject data = new JSONObject();
-            data.put("color", "WHITE");
-            data.put("distance", Integer.MAX_VALUE);
-            data.put("parent", "NIL");
+        vertices.values().forEach(vertex -> {// Distance == layer
+            vertex.getData().put("discovered", false).put("distance", Integer.MAX_VALUE);
         });
+
         Vertex s = getVertexByName(source.getName());
-        s.getData().put("color", "GRAY");
+        s.getData().put("discovered", true);
         s.getData().put("distance", 0);
 
         Queue<Vertex> q = new LinkedList<>();
         q.add(s);
 
         while (!q.isEmpty()) {
-            List<Edge> adjList = edges.get(q.poll().getName());
+            Vertex u = q.poll();
+            List<Edge> adjList = edges.get(u.getName());
             adjList.forEach(edge -> {
-                // if edge.
-
+                Vertex v = getVertexByName(edge.getNode2Name());
+                if (!v.getData().getBoolean("discovered")) {
+                    v.getData().put("discovered", true).put("distance",
+                            u.getData().getInt("distance") + 1);
+                    q.add(v);
+                    g.addEdge(u, v, new JSONObject());
+                }
             });
-
         }
 
-        return null;
+        return g;
+    }
+
+    public Graph DFS_R(Vertex source) {
+        Graph g = new Graph(false);
+        vertices.values().forEach(vertex -> {// Distance == layer
+            vertex.getData().put("visited", false);
+        });
+
+        Vertex s = getVertexByName(source.getName());
+        DFS_R_Helper(s, g);
+        return g;
+    }
+
+    public void DFS_R_Helper(Vertex u, Graph g) {
+        u.getData().put("visited", true);
+        List<Edge> adjList = edges.get(u.getName());
+        adjList.forEach(edge -> {
+            Vertex v = getVertexByName(edge.getNode2Name());
+            if (!v.getData().getBoolean("visited")) {
+                g.addEdge(u, v, new JSONObject());
+                DFS_R_Helper(v, g);
+            }
+        });
+    }
+
+    public Graph DFS_I(Vertex source) {
+        Graph g = new Graph(false);
+        Stack<Vertex> stack = new Stack<>();
+        vertices.values().forEach(vertex -> {
+            vertex.getData().put("visited", false);
+        });
+
+        Vertex s = getVertexByName(source.getName());
+        s.getData().put("visited", true);
+        stack.push(s);
+
+        while (!stack.empty()) {
+            Vertex u = stack.peek();
+            stack.pop();
+            List<Edge> adjList = edges.get(u.getName());
+            adjList.forEach(edge -> {
+                Vertex v = getVertexByName(edge.getNode2Name());
+                if (!v.getData().getBoolean("visited")) {
+                    v.getData().put("visited", true);
+                    g.addEdge(u, v, new JSONObject());
+                    stack.push(v);
+                }
+            });
+        }
+        return g;
+    }
+
+    // Get vertex with max out degre
+    public String getVertexNameWithMaxOutDegree() {
+        Entry<String, List<Edge>> entry =
+                this.getEdges().entrySet().stream().max((first, second) -> {
+                    if (first.getValue().size() > second.getValue().size())
+                        return 1;
+                    else if (first.getValue().size() < second.getValue().size())
+                        return -1;
+                    return 0;
+                }).get();
+
+        return entry.getKey();
     }
 
     // To file
@@ -287,6 +366,18 @@ public class Graph {
             str.append("graph G{\n");
         this.edges.values().forEach(
                 (edgeList) -> edgeList.forEach((edge) -> str.append(edge.getId()).append(";\n")));
+
+        // { rank=same; A1 A2 A3 }
+        Map<Integer, List<Vertex>> layers =
+                this.vertices.values().stream().collect(Collectors.groupingBy(Vertex::getLayer));
+        layers.values().forEach(list -> {
+            str.append("{ rank = same; ");
+            list.forEach(element -> {
+                str.append(element.getName() + "; ");
+            });
+            str.append("}\n");
+        });
+
         str.append("}");
         return str.toString();
     }
