@@ -46,7 +46,7 @@ public class Graph {
 	}
 
 	public void addEdge(String id, Vertex vertex1, Vertex vertex2, JSONObject data) {
-		Edge edge = new Edge(id, vertex1.getName(), vertex2.getName(), data);
+		Edge edge = new Edge(id, vertex1, vertex2, data);
 		this.addEdge(edge);
 	}
 
@@ -59,8 +59,8 @@ public class Graph {
 			addVertex(vertex2);
 		}
 
-		String id = generateEdgeId(vertex1.getName(), vertex2.getName());
-		Edge edge = new Edge(id, vertex1.getName(), vertex2.getName(), data);
+		String id = generateEdgeId(vertex1, vertex2);
+		Edge edge = new Edge(id, vertex1, vertex2, data);
 		this.addEdge(edge);
 	}
 
@@ -73,30 +73,27 @@ public class Graph {
 	}
 
 	public void addEdgeHelper(Edge edge) {
-		edges.get(edge.getNode1Name()).add(edge);
+		edges.get(edge.getNode1().getName()).add(edge);
 	}
 
 	private Edge generateReverseEdge(Edge edge) {
-		String vertex1 = edge.getNode2Name();
-		String vertex2 = edge.getNode1Name();
-		JSONObject data = edge.getData();
-		String id = generateEdgeId(vertex1, vertex2);
-		return new Edge(id, vertex1, vertex2, data);
+		String id = generateEdgeId(edge.getNode2(), edge.getNode1());
+		return new Edge(id, edge.getNode2(), edge.getNode1(), edge.getData());
 	}
 
-	private String generateEdgeId(String vertex1, String vertex2) {
+	private String generateEdgeId(Vertex vertex1, Vertex vertex2) {
 		if (directed)
-			return vertex1 + "->" + vertex2;
+			return vertex1.getName() + "->" + vertex2.getName();
 		else
-			return vertex1 + "--" + vertex2;
+			return vertex1.getName() + "--" + vertex2.getName();
 	}
 
 	public boolean existEdge(Vertex vertex1, Vertex vertex2) {
-		List<Edge> edgeList = edges.get(vertex1.getName());
-		if (edgeList.isEmpty())
+		List<Edge> adjList = edges.get(vertex1.getName());
+		if (adjList.isEmpty())
 			return false;
 		else
-			return edgeList.stream().anyMatch(edge -> edge.getNode2Name().equals(vertex2.getName()));
+			return adjList.stream().anyMatch(edge -> edge.getNode2().equals(vertex2));
 	}
 
 	public int VertexDegree(Vertex vertex) {
@@ -113,8 +110,8 @@ public class Graph {
 		for (int i = 0; i < m; i++) {
 			int v1 = ThreadLocalRandom.current().nextInt(n);
 			int v2 = ThreadLocalRandom.current().nextInt(n);
-			Vertex vertex1 = graph.getVertexByName(v1 + "");
-			Vertex vertex2 = graph.getVertexByName(v2 + "");
+			Vertex vertex1 = graph.getVertices().get(v1 + "");
+			Vertex vertex2 = graph.getVertices().get(v2 + "");
 			if (v1 == v2 && !selfRelated) { // Same vertex
 				i--;
 			} else if (graph.existEdge(vertex1, vertex2)) {
@@ -139,8 +136,8 @@ public class Graph {
 					continue;
 				double random = ThreadLocalRandom.current().nextDouble();
 				if (random <= p) {
-					Vertex vertex1 = graph.getVertexByName(i + "");
-					Vertex vertex2 = graph.getVertexByName(j + "");
+					Vertex vertex1 = graph.getVertices().get(i + "");
+					Vertex vertex2 = graph.getVertices().get(j + "");
 					if (!graph.existEdge(vertex1, vertex2))
 						graph.addEdge(vertex1, vertex2, new JSONObject());
 				}
@@ -167,8 +164,8 @@ public class Graph {
 				if (i == j && !selfRelated) // Same vertex
 					continue;
 
-				Vertex vertex1 = graph.getVertexByName(i + "");
-				Vertex vertex2 = graph.getVertexByName(j + "");
+				Vertex vertex1 = graph.getVertices().get(i + "");
+				Vertex vertex2 = graph.getVertices().get(j + "");
 				if (!graph.existEdge(vertex1, vertex2)) {
 					// Calculate distance
 					double x_1 = vertex1.getData().getDouble("x"), y_1 = vertex1.getData().getDouble("y");
@@ -197,21 +194,18 @@ public class Graph {
 		int D = (int) d;
 		// By definition, the first D vertices have to be connected
 		for (int i = 0; i < D; i++) {
-			Vertex vertex1 = graph.getVertexByName(arrayInt.get(i) + "");
-			;
-			;
-			;
+			Vertex vertex1 = graph.getVertices().get(arrayInt.get(i) + "");
 			for (int j = i + 1; j < D; j++) {
-				Vertex vertex2 = graph.getVertexByName(arrayInt.get(j) + "");
+				Vertex vertex2 = graph.getVertices().get(arrayInt.get(j) + "");
 				graph.addEdge(vertex1, vertex2, new JSONObject());
 			}
 		}
 
 		// After that, connect using formula p=1-deg(v)/d
 		for (int i = D; i < n; i++) {
-			Vertex vertex1 = graph.getVertexByName(arrayInt.get(i) + "");
+			Vertex vertex1 = graph.getVertices().get(arrayInt.get(i) + "");
 			for (int j = 0; j < i; j++) {
-				Vertex vertex2 = graph.getVertexByName(arrayInt.get(j) + "");
+				Vertex vertex2 = graph.getVertices().get(arrayInt.get(j) + "");
 				int nodeDegree = graph.VertexDegree(vertex2);
 				double random = ThreadLocalRandom.current().nextDouble();
 				double p = 1 - (double) (nodeDegree / d);
@@ -223,14 +217,13 @@ public class Graph {
 		return graph;
 	}
 
-	public Graph BFS(Vertex source) {
+	public Graph BFS(Vertex s) {
 		Graph g = new Graph(false);
 
-		vertices.values().forEach(vertex -> {// Distance == layer
+		vertices.values().forEach(vertex -> {// distance == layer
 			vertex.getData().put("discovered", false).put("distance", Integer.MAX_VALUE);
 		});
 
-		Vertex s = getVertexByName(source.getName());
 		s.getData().put("discovered", true);
 		s.getData().put("distance", 0);
 
@@ -241,7 +234,7 @@ public class Graph {
 			Vertex u = q.poll();
 			List<Edge> adjList = edges.get(u.getName());
 			adjList.forEach(edge -> {
-				Vertex v = getVertexByName(edge.getNode2Name());
+				Vertex v = edge.getNode2();
 				if (!v.getData().getBoolean("discovered")) {
 					v.getData().put("discovered", true).put("distance", u.getData().getInt("distance") + 1);
 					q.add(v);
@@ -253,13 +246,11 @@ public class Graph {
 		return g;
 	}
 
-	public Graph DFS_R(Vertex source) {
+	public Graph DFS_R(Vertex s) {
 		Graph g = new Graph(false);
 		vertices.values().forEach(vertex -> {// Distance == layer
 			vertex.getData().put("visited", false);
 		});
-
-		Vertex s = getVertexByName(source.getName());
 		DFS_R_Helper(s, g);
 		return g;
 	}
@@ -268,7 +259,7 @@ public class Graph {
 		u.getData().put("visited", true);
 		List<Edge> adjList = edges.get(u.getName());
 		adjList.forEach(edge -> {
-			Vertex v = getVertexByName(edge.getNode2Name());
+			Vertex v = edge.getNode2();
 			if (!v.getData().getBoolean("visited")) {
 				g.addEdge(u, v, new JSONObject());
 				DFS_R_Helper(v, g);
@@ -276,14 +267,12 @@ public class Graph {
 		});
 	}
 
-	public Graph DFS_I(Vertex source) {
+	public Graph DFS_I(Vertex s) {
 		Graph g = new Graph(false);
 		Stack<Vertex> stack = new Stack<>();
 		vertices.values().forEach(vertex -> {
 			vertex.getData().put("visited", false);
 		});
-
-		Vertex s = getVertexByName(source.getName());
 		s.getData().put("visited", true);
 		stack.push(s);
 
@@ -292,7 +281,7 @@ public class Graph {
 			stack.pop();
 			List<Edge> adjList = edges.get(u.getName());
 			adjList.forEach(edge -> {
-				Vertex v = getVertexByName(edge.getNode2Name());
+				Vertex v = edge.getNode2();
 				if (!v.getData().getBoolean("visited")) {
 					v.getData().put("visited", true);
 					g.addEdge(u, v, new JSONObject());
@@ -303,8 +292,35 @@ public class Graph {
 		return g;
 	}
 
+	public void randomEdgeValues(float min, float max) {
+		if (directed) {
+			for (Entry<String, List<Edge>> entry : getEdges().entrySet()) {
+				List<Edge> adjList = entry.getValue();
+				for (Edge edge : adjList) {
+					edge.getData().put("weight", ThreadLocalRandom.current().nextDouble(min, max));
+				}
+			}
+		} else {
+			for (Entry<String, List<Edge>> entry : getEdges().entrySet()) {
+				List<Edge> adjList1 = entry.getValue();
+				for (Edge edge1 : adjList1) {
+					if (!edge1.getData().has("weight")) {
+						double weight = ThreadLocalRandom.current().nextDouble(min, max);
+						edge1.getData().put("weight", weight); // n1->n2
+						List<Edge> adjList2 = getEdges().get(edge1.getNode2().getName());
+						for (Edge edge2 : adjList2) {
+							if ((edge2.getNode2()).equals(edge1.getNode1())) {
+								edge2.getData().put("weight", weight); // n2->n1
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	// Get vertex with max out degre
-	public String getVertexNameWithMaxOutDegree() {
+	public Vertex getVertexNameWithMaxOutDegree() {
 		Entry<String, List<Edge>> entry = this.getEdges().entrySet().stream().max((first, second) -> {
 			if (first.getValue().size() > second.getValue().size())
 				return 1;
@@ -313,7 +329,7 @@ public class Graph {
 			return 0;
 		}).get();
 
-		return entry.getKey();
+		return this.vertices.get(entry.getKey());
 	}
 
 	// To file
@@ -324,10 +340,6 @@ public class Graph {
 	// Getters and setters
 	public HashMap<String, Vertex> getVertices() {
 		return vertices;
-	}
-
-	public Vertex getVertexByName(String name) {
-		return vertices.get(name);
 	}
 
 	public void setVertices(HashMap<String, Vertex> vertices) {

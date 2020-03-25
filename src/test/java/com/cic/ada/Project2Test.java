@@ -75,7 +75,7 @@ public class Project2Test {
 	}
 
 	private void traversal(String type, Graph graph) throws IOException {
-		Vertex source = graph.getVertexByName(graph.getVertexNameWithMaxOutDegree());
+		Vertex source = graph.getVertexNameWithMaxOutDegree();
 		graph.BFS(source).writeToFile(path, type + graph.getVertices().size() + "-BFS" + fileExt);
 		graph.DFS_I(source).writeToFile(path, type + graph.getVertices().size() + "-DFS_I" + fileExt);
 		graph.DFS_R(source).writeToFile(path, type + graph.getVertices().size() + "-DFS_R" + fileExt);
