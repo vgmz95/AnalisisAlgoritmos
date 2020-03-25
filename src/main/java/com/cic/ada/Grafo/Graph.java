@@ -4,12 +4,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
@@ -22,6 +26,13 @@ public class Graph {
 	private HashMap<String, Vertex> vertices;
 	private HashMap<String, List<Edge>> edges;
 	private boolean directed;
+
+	private static final String DISTANCE = "distance";
+	private static final String DISCOVERED = "discovered";
+	private static final String VISITED = "visited";
+	public static final String WEIGHT = "weight";
+	private static final String NIL = "nil";
+	private static final String PARENT = "parent";
 
 	public Graph() {
 		this.vertices = new HashMap<>();
@@ -221,11 +232,11 @@ public class Graph {
 		Graph g = new Graph(false);
 
 		vertices.values().forEach(vertex -> {// distance == layer
-			vertex.getData().put("discovered", false).put("distance", Integer.MAX_VALUE);
+			vertex.getData().put(DISCOVERED, false).put(DISTANCE, Integer.MAX_VALUE);
 		});
 
-		s.getData().put("discovered", true);
-		s.getData().put("distance", 0);
+		s.getData().put(DISCOVERED, true);
+		s.getData().put(DISTANCE, 0);
 
 		Queue<Vertex> q = new LinkedList<>();
 		q.add(s);
@@ -235,8 +246,8 @@ public class Graph {
 			List<Edge> adjList = edges.get(u.getName());
 			adjList.forEach(edge -> {
 				Vertex v = edge.getNode2();
-				if (!v.getData().getBoolean("discovered")) {
-					v.getData().put("discovered", true).put("distance", u.getData().getInt("distance") + 1);
+				if (!v.getData().getBoolean(DISCOVERED)) {
+					v.getData().put(DISCOVERED, true).put(DISTANCE, u.getData().getInt(DISTANCE) + 1);
 					q.add(v);
 					g.addEdge(u, v, new JSONObject());
 				}
@@ -248,19 +259,19 @@ public class Graph {
 
 	public Graph DFS_R(Vertex s) {
 		Graph g = new Graph(false);
-		vertices.values().forEach(vertex -> {// Distance == layer
-			vertex.getData().put("visited", false);
+		vertices.values().forEach(vertex -> {
+			vertex.getData().put(VISITED, false);
 		});
 		DFS_R_Helper(s, g);
 		return g;
 	}
 
 	public void DFS_R_Helper(Vertex u, Graph g) {
-		u.getData().put("visited", true);
+		u.getData().put(VISITED, true);
 		List<Edge> adjList = edges.get(u.getName());
 		adjList.forEach(edge -> {
 			Vertex v = edge.getNode2();
-			if (!v.getData().getBoolean("visited")) {
+			if (!v.getData().getBoolean(VISITED)) {
 				g.addEdge(u, v, new JSONObject());
 				DFS_R_Helper(v, g);
 			}
@@ -271,9 +282,9 @@ public class Graph {
 		Graph g = new Graph(false);
 		Stack<Vertex> stack = new Stack<>();
 		vertices.values().forEach(vertex -> {
-			vertex.getData().put("visited", false);
+			vertex.getData().put(VISITED, false);
 		});
-		s.getData().put("visited", true);
+		s.getData().put(VISITED, true);
 		stack.push(s);
 
 		while (!stack.empty()) {
@@ -282,8 +293,8 @@ public class Graph {
 			List<Edge> adjList = edges.get(u.getName());
 			adjList.forEach(edge -> {
 				Vertex v = edge.getNode2();
-				if (!v.getData().getBoolean("visited")) {
-					v.getData().put("visited", true);
+				if (!v.getData().getBoolean(VISITED)) {
+					v.getData().put(VISITED, true);
 					g.addEdge(u, v, new JSONObject());
 					stack.push(v);
 				}
@@ -293,29 +304,90 @@ public class Graph {
 	}
 
 	public void randomEdgeValues(float min, float max) {
-		if (directed) {
-			for (Entry<String, List<Edge>> entry : getEdges().entrySet()) {
-				List<Edge> adjList = entry.getValue();
-				for (Edge edge : adjList) {
-					edge.getData().put("weight", ThreadLocalRandom.current().nextDouble(min, max));
-				}
-			}
-		} else {
-			for (Entry<String, List<Edge>> entry : getEdges().entrySet()) {
-				List<Edge> adjList1 = entry.getValue();
-				for (Edge edge1 : adjList1) {
-					if (!edge1.getData().has("weight")) {
-						double weight = ThreadLocalRandom.current().nextDouble(min, max);
-						edge1.getData().put("weight", weight); // n1->n2
+		for (Entry<String, List<Edge>> entry : getEdges().entrySet()) {
+			List<Edge> adjList1 = entry.getValue();
+			for (Edge edge1 : adjList1) {
+				if (!edge1.getData().has(WEIGHT)) {
+					double weight = ThreadLocalRandom.current().nextDouble(min, max);
+					edge1.getData().put(WEIGHT, weight); // n1->n2
+					if (!directed) { // n2->n1
 						List<Edge> adjList2 = getEdges().get(edge1.getNode2().getName());
 						for (Edge edge2 : adjList2) {
 							if ((edge2.getNode2()).equals(edge1.getNode1())) {
-								edge2.getData().put("weight", weight); // n2->n1
+								edge2.getData().put(WEIGHT, weight);
 							}
 						}
 					}
 				}
+
 			}
+		}
+	}
+
+	public Graph dijkstra(Vertex source) {
+		// *** CLRS implementation *** //
+		initializeSingleSource(vertices, source);
+		Set<Vertex> s = new HashSet<>();
+		// Priority queue keyed by distance
+		Queue<Vertex> q = new PriorityQueue<>((first, second) -> {
+			if (first.getData().getFloat(DISTANCE) > second.getData().getFloat(DISTANCE))
+				return 1;
+			else if (first.getData().getFloat(DISTANCE) < second.getData().getFloat(DISTANCE))
+				return -1;
+			return 0;
+		});
+		q.addAll(vertices.values());
+
+		while (!q.isEmpty()) {
+			Vertex u = q.poll();
+			s.add(u);
+			List<Edge> adjList = edges.get(u.getName());
+			for (Edge e : adjList) {
+				Vertex v = e.getNode2();
+				float weight = e.getData().getFloat(WEIGHT);
+				relax(u, v, weight);
+			}
+		}
+
+		// New graph construction
+		Graph g = new Graph(true);
+		// Add vertices and edges
+		for (Vertex vertex : s) {
+			// Skip if source
+			if (vertex.getData().get(PARENT).equals(NIL))
+				continue;
+
+			Vertex node1 = vertices.get(vertex.getData().get(PARENT));
+			Vertex node2 = vertex;
+			String node1Id = generateVertexIdDijkstra(node1);
+			String node2Id = generateVertexIdDijkstra(node2);
+
+			Vertex auxNode1 = new Vertex(node1Id, node1.getData());
+			Vertex auxNode2 = new Vertex(node2Id, node2.getData());
+
+			g.addEdge(auxNode1, auxNode2, new JSONObject());
+		}
+
+		return g;
+	}
+
+	private String generateVertexIdDijkstra(Vertex vertex) {
+		float distance = vertex.getData().getFloat(DISTANCE);
+		return "Nodo_" + vertex.getName() + '(' + distance + ')';
+	}
+
+	private void initializeSingleSource(HashMap<String, Vertex> vertices, Vertex source) {
+		for (Entry<String, Vertex> vertex : vertices.entrySet()) {
+			vertex.getValue().getData().put(DISTANCE, Float.MAX_VALUE);
+			vertex.getValue().getData().put(PARENT, NIL);
+		}
+		source.getData().put(DISTANCE, 0.0);
+	}
+
+	private void relax(Vertex u, Vertex v, float weight) {
+		if (v.getData().getFloat(DISTANCE) > u.getData().getFloat(DISTANCE) + weight) {
+			v.getData().put(DISTANCE, u.getData().getFloat(DISTANCE) + weight);
+			v.getData().put(PARENT, u.getName());
 		}
 	}
 
@@ -365,13 +437,44 @@ public class Graph {
 	@Override
 	public String toString() {
 		StringBuilder str = new StringBuilder();
+		//Directed or undirected
 		if (directed)
 			str.append("digraph G{\n");
 		else
 			str.append("graph G{\n");
-		this.edges.values().forEach((edgeList) -> edgeList.forEach((edge) -> str.append(edge.getId()).append(";\n")));
 
-		// { rank=same; A1 A2 A3 }
+		//
+		List<Edge> allEdges = new ArrayList<>();
+		List<Edge> auxEdges = new ArrayList<>();
+		Collection<List<Edge>> edgeList = edges.values();
+		for (List<Edge> adjLists : edgeList) {
+			for (Edge edge : adjLists) {
+				allEdges.add(edge);
+			}
+		}
+		//Omit reverse edges in undirected graphs
+		if(!directed){
+			for(Edge edge: allEdges){
+				Edge reverseEdge = generateReverseEdge(edge);
+				if(!auxEdges.contains(reverseEdge)){
+					auxEdges.add(edge);
+				}
+			}
+		}else{
+			auxEdges = allEdges;
+		}
+
+		// Edges to string
+		for (Edge edge : auxEdges) {
+			str.append(edge.getId());
+			if (edge.getData().has(WEIGHT)){
+				str.append(String.format(" [weight=%.5f]",edge.getData().getFloat(WEIGHT)));
+			}
+			str.append(";\n");
+		}
+		
+
+		/* Layer (doenst work with gephi =( )
 		Map<Integer, List<Vertex>> layers = this.vertices.values().stream()
 				.collect(Collectors.groupingBy(Vertex::getLayer));
 		layers.values().forEach(list -> {
@@ -380,7 +483,7 @@ public class Graph {
 				str.append(element.getName() + "; ");
 			});
 			str.append("}\n");
-		});
+		});*/
 
 		str.append("}");
 		return str.toString();

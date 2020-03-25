@@ -3,6 +3,8 @@ package com.cic.ada;
 import java.io.IOException;
 import com.cic.ada.Grafo.Graph;
 import com.cic.ada.Grafo.Vertex;
+
+import org.json.JSONObject;
 import org.junit.Test;
 
 public class Project2Test {
@@ -14,7 +16,62 @@ public class Project2Test {
 	String fileExt = ".gv";
 
 	@Test
-	public void Traversal_Test() throws IOException {
+	public void TraversalCLRS() throws IOException {
+		bfsCLRS();
+		dfsCLRS();		
+	}
+
+	@Test
+	public void bfsCLRS() throws IOException {
+		Graph graph = new Graph(false);
+		Vertex r,s,t,u,v,w,x,y;
+		String type = "BFS-CLRS-";
+		r = new Vertex("r");
+		s = new Vertex("s");
+		t = new Vertex("t");
+		u = new Vertex("u");
+		v = new Vertex("v");
+		w = new Vertex("w");
+		x = new Vertex("x");
+		y = new Vertex("y");
+		graph.addEdge(r, s, new JSONObject());
+		graph.addEdge(r, v, new JSONObject());
+		graph.addEdge(s, w, new JSONObject());
+		graph.addEdge(w, x, new JSONObject());
+		graph.addEdge(w, t, new JSONObject());
+		graph.addEdge(t, u, new JSONObject());
+		graph.addEdge(t, x, new JSONObject());
+		graph.addEdge(x, u, new JSONObject());
+		graph.addEdge(x, y, new JSONObject());
+		graph.addEdge(y, u, new JSONObject());
+		Graph bfs = graph.BFS(s);
+		bfs.writeToFile(path, type + graph.getVertices().size() + fileExt);	
+	}
+
+	@Test
+	public void dfsCLRS() throws IOException {
+		Graph graph = new Graph(true);
+		Vertex u,v,w,x,y,z;
+		String type = "DFSR-CLRS-";	
+		u = new Vertex("u");
+		v = new Vertex("v");
+		w = new Vertex("w");
+		x = new Vertex("x");
+		y = new Vertex("y");
+		z = new Vertex("z");
+		graph.addEdge(u,v, new JSONObject());
+		graph.addEdge(u,x, new JSONObject());
+		graph.addEdge(x,v, new JSONObject());
+		graph.addEdge(v,y, new JSONObject());
+		graph.addEdge(w,y, new JSONObject());
+		graph.addEdge(w,z, new JSONObject());
+		graph.addEdge(z,z, new JSONObject());	
+		Graph bfs = graph.DFS_R(u);
+		bfs.writeToFile(path, type + graph.getVertices().size() + fileExt);	
+	}
+
+	@Test
+	public void traversalTest() throws IOException {
 		erdosRenyiTraversalTest();
 		gilbertTraversalTest();
 		geoGraphicTraversalTest();
