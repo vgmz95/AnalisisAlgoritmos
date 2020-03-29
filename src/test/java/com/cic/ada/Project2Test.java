@@ -85,7 +85,6 @@ public class Project2Test {
 				Graph.generateErdosRenyiGraph(many, 200, false, false),
 				Graph.generateErdosRenyiGraph(lots, 300, false, false), };
 		for (Graph graph : erdosRenyiGraphs) {
-			graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
 			traversal(type, graph);
 		}
 	}
@@ -98,7 +97,6 @@ public class Project2Test {
 				Graph.generateGilbertGraph(lots, 0.02, false, false), };
 
 		for (Graph graph : GilbertGraphs) {
-			graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
 			traversal(type, graph);
 		}
 	}
@@ -112,7 +110,6 @@ public class Project2Test {
 				Graph.generateGeographicGraph(lots, 0.08, false, false), };
 
 		for (Graph graph : GeoGraphs) {
-			graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
 			traversal(type, graph);
 		}
 
@@ -124,14 +121,14 @@ public class Project2Test {
 		Graph[] barabasiGraphs = { Graph.generateBarabasiAlbertGraph(few, 12, false, false),
 				Graph.generateBarabasiAlbertGraph(many, 12, false, false),
 				Graph.generateBarabasiAlbertGraph(lots, 15, false, false), };
-		for (Graph graph : barabasiGraphs) {
-			graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
+		for (Graph graph : barabasiGraphs) {			
 			traversal(type, graph);
 		}
 
 	}
 
 	private void traversal(String type, Graph graph) throws IOException {
+		graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
 		Vertex source = graph.getVertexNameWithMaxOutDegree();
 		graph.BFS(source).writeToFile(path, type + graph.getVertices().size() + "-BFS" + fileExt);
 		graph.DFS_I(source).writeToFile(path, type + graph.getVertices().size() + "-DFS_I" + fileExt);

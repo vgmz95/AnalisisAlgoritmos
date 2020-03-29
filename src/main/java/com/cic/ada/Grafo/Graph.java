@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -284,12 +283,12 @@ public class Graph {
 		vertices.values().forEach(vertex -> {
 			vertex.getData().put(VISITED, false);
 		});
-		s.getData().put(VISITED, true);
+		
 		stack.push(s);
+		s.getData().put(VISITED, true);
 
 		while (!stack.empty()) {
-			Vertex u = stack.peek();
-			stack.pop();
+			Vertex u = stack.pop();
 			List<Edge> adjList = edges.get(u.getName());
 			adjList.forEach(edge -> {
 				Vertex v = edge.getNode2();
@@ -315,6 +314,7 @@ public class Graph {
 						for (Edge edge2 : adjList2) {
 							if ((edge2.getNode2()).equals(edge1.getNode1())) {
 								edge2.getData().put(WEIGHT, weight);
+								break;
 							}
 						}
 					}
@@ -330,9 +330,9 @@ public class Graph {
 		Set<Vertex> s = new HashSet<>();
 		// Priority queue keyed by distance
 		Queue<Vertex> q = new PriorityQueue<>((first, second) -> {
-			if (first.getData().getFloat(DISTANCE) > second.getData().getFloat(DISTANCE))
+			if (first.getData().getDouble(DISTANCE) > second.getData().getDouble(DISTANCE))
 				return 1;
-			else if (first.getData().getFloat(DISTANCE) < second.getData().getFloat(DISTANCE))
+			else if (first.getData().getDouble(DISTANCE) < second.getData().getDouble(DISTANCE))
 				return -1;
 			return 0;
 		});
@@ -344,13 +344,13 @@ public class Graph {
 			List<Edge> adjList = edges.get(u.getName());
 			for (Edge e : adjList) {
 				Vertex v = e.getNode2();
-				float weight = e.getData().getFloat(WEIGHT);
+				double weight = e.getData().getDouble(WEIGHT);
 				relax(u, v, weight);
 			}
 		}
 
 		// New graph construction
-		Graph g = new Graph(true);
+		Graph g = new Graph(directed);
 		// Add vertices and edges
 		for (Vertex vertex : s) {
 			// Skip if source
@@ -364,31 +364,38 @@ public class Graph {
 
 			Vertex auxNode1 = new Vertex(node1Id, node1.getData());
 			Vertex auxNode2 = new Vertex(node2Id, node2.getData());
-
-			g.addEdge(auxNode1, auxNode2, new JSONObject());
+			List<Edge> adjList2 = getEdges().get(node1.getName());
+			JSONObject vertexData = new JSONObject();
+			for (Edge edge2 : adjList2) {
+				if ((edge2.getNode2()).equals(node2)) {
+					vertexData = edge2.getData();
+				}
+			}
+			g.addEdge(auxNode1, auxNode2, vertexData);
 		}
 
 		return g;
 	}
 
-	private String generateVertexIdDijkstra(Vertex vertex) {
-		float distance = vertex.getData().getFloat(DISTANCE);
-		return "Nodo_" + vertex.getName() + '(' + distance + ')';
-	}
 
 	private void initializeSingleSource(HashMap<String, Vertex> vertices, Vertex source) {
 		for (Entry<String, Vertex> vertex : vertices.entrySet()) {
-			vertex.getValue().getData().put(DISTANCE, Float.MAX_VALUE);
+			vertex.getValue().getData().put(DISTANCE, Double.MAX_VALUE);
 			vertex.getValue().getData().put(PARENT, NIL);
 		}
 		source.getData().put(DISTANCE, 0.0);
 	}
 
-	private void relax(Vertex u, Vertex v, float weight) {
-		if (v.getData().getFloat(DISTANCE) > u.getData().getFloat(DISTANCE) + weight) {
-			v.getData().put(DISTANCE, u.getData().getFloat(DISTANCE) + weight);
+	private void relax(Vertex u, Vertex v, double weight) {		
+		if (v.getData().getDouble(DISTANCE) > u.getData().getDouble(DISTANCE) + weight) {
+			v.getData().put(DISTANCE, u.getData().getDouble(DISTANCE) + weight);
 			v.getData().put(PARENT, u.getName());
 		}
+	}
+	
+	private String generateVertexIdDijkstra(Vertex vertex) {
+		double distance = vertex.getData().getDouble(DISTANCE);
+		return String.format("Nodo_%s(%.2f)", vertex.getName(), distance );
 	}
 
 	// Get vertex with max out degre
@@ -437,7 +444,7 @@ public class Graph {
 	@Override
 	public String toString() {
 		StringBuilder str = new StringBuilder();
-		//Directed or undirected
+		// Directed or undirected
 		if (directed)
 			str.append("digraph G{\n");
 		else
@@ -452,38 +459,35 @@ public class Graph {
 				allEdges.add(edge);
 			}
 		}
-		//Omit reverse edges in undirected graphs
-		if(!directed){
-			for(Edge edge: allEdges){
+		// Omit reverse edges in undirected graphs
+		if (!directed) {
+			for (Edge edge : allEdges) {
 				Edge reverseEdge = generateReverseEdge(edge);
-				if(!auxEdges.contains(reverseEdge)){
+				if (!auxEdges.contains(reverseEdge)) {
 					auxEdges.add(edge);
 				}
 			}
-		}else{
+		} else {
 			auxEdges = allEdges;
 		}
 
 		// Edges to string
 		for (Edge edge : auxEdges) {
 			str.append(edge.getId());
-			if (edge.getData().has(WEIGHT)){
-				str.append(String.format(" [weight=%.5f]",edge.getData().getFloat(WEIGHT)));
+			if (edge.getData().has(WEIGHT)) {
+				str.append(String.format(" [label=%.2f]", edge.getData().getDouble(WEIGHT)));
 			}
 			str.append(";\n");
 		}
-		
 
-		/* Layer (doenst work with gephi =( )
-		Map<Integer, List<Vertex>> layers = this.vertices.values().stream()
-				.collect(Collectors.groupingBy(Vertex::getLayer));
-		layers.values().forEach(list -> {
-			str.append("{ rank = same; ");
-			list.forEach(element -> {
-				str.append(element.getName() + "; ");
-			});
-			str.append("}\n");
-		});*/
+		/*
+		 * Layer (doenst work with gephi =( ) Map<Integer, List<Vertex>> layers =
+		 * this.vertices.values().stream()
+		 * .collect(Collectors.groupingBy(Vertex::getLayer));
+		 * layers.values().forEach(list -> { str.append("{ rank = same; ");
+		 * list.forEach(element -> { str.append(element.getName() + "; "); });
+		 * str.append("}\n"); });
+		 */
 
 		str.append("}");
 		return str.toString();
