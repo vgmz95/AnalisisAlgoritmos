@@ -33,6 +33,7 @@ public class Graph {
 	public static final String WEIGHT = "weight";
 	private static final String NIL = "nil";
 	private static final String PARENT = "parent";
+	private static final Float INF = 9999999999.9f;
 
 	public Graph() {
 		this.vertices = new HashMap<>();
@@ -346,7 +347,7 @@ public class Graph {
 			for (Edge e : adjList) {
 				Vertex v = e.getNode2();
 				float weight = e.getData().getFloat(WEIGHT);
-				relax(u, v, weight, q);				
+				relax(u, v, weight, q);
 			}
 		}
 
@@ -370,6 +371,7 @@ public class Graph {
 			for (Edge edge2 : adjList2) {
 				if ((edge2.getNode2()).equals(node2)) {
 					vertexData = edge2.getData();
+					break;
 				}
 			}
 			g.addEdge(auxNode1, auxNode2, vertexData);
@@ -380,7 +382,7 @@ public class Graph {
 
 	private void initializeSingleSource(Map<String, Vertex> vertices, Vertex source) {
 		for (Entry<String, Vertex> vertex : vertices.entrySet()) {
-			vertex.getValue().getData().put(DISTANCE, Float.valueOf(100000000.0f));
+			vertex.getValue().getData().put(DISTANCE, INF);
 			vertex.getValue().getData().put(PARENT, NIL);
 		}
 		source.getData().put(DISTANCE, Float.valueOf(0.0f));
@@ -391,7 +393,7 @@ public class Graph {
 			v.getData().put(DISTANCE, u.getData().getFloat(DISTANCE) + weight);
 			v.getData().put(PARENT, u.getName());
 			q.offer(v);
-		} 
+		}
 	}
 
 	private String generateVertexIdDijkstra(Vertex vertex) {
@@ -482,7 +484,7 @@ public class Graph {
 		}
 
 		/*
-		 * Layer (doenst work with gephi =( ) Map<Integer, List<Vertex>> layers =
+		 * Layer -doesn't work with gephi :( - Map<Integer, List<Vertex>> layers =
 		 * this.vertices.values().stream()
 		 * .collect(Collectors.groupingBy(Vertex::getLayer));
 		 * layers.values().forEach(list -> { str.append("{ rank = same; ");

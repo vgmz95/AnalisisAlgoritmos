@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+    "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<svg contentScriptType="text/ecmascript" width="512.0"
+     xmlns:xlink="http://www.w3.org/1999/xlink" zoomAndPan="magnify"
+     contentStyleType="text/css"
+     viewBox="0.000000 -341.000000 512.000000 616.000000" height="616.0"
+     preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"
+     version="1.1">
+    <g id="edges">
+        <path fill="none" stroke-width="1.0"
+              d="M 224.135941,137.361603 L 248.635757,-78.198677"
+              class="id_Nodo_13(33.57) id_Nodo_25(0.00)" stroke-opacity="1.0"
+              stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 224.135941,137.361603 L 336.114685,264.325439"
+              class="id_Nodo_13(33.57) id_Nodo_19(70.29)" stroke-opacity="1.0"
+              stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 224.135941,137.361603 L 99.946503,254.438385"
+              class="id_Nodo_13(33.57) id_Nodo_10(51.22)" stroke-opacity="1.0"
+              stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 501.577515,-330.924347 L 388.955902,-218.730133"
+              class="id_Nodo_18(51.97) id_Nodo_23(43.14)" stroke-opacity="1.0"
+              stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 114.205124,-178.278702 L 248.635757,-78.198677"
+              class="id_Nodo_15(4.95) id_Nodo_25(0.00)" stroke-opacity="1.0"
+              stroke="#000000"/>
+        <path fill="none" stroke-width="1.0"
+              d="M 388.955902,-218.730133 L 248.635757,-78.198677"
+              class="id_Nodo_23(43.14) id_Nodo_25(0.00)" stroke-opacity="1.0"
+              stroke="#000000"/>
+    </g>
+    <g id="nodes">
+        <circle fill-opacity="0.4" fill="#000000" r="10.0" cx="224.13594"
+                class="id_Nodo_13(33.57)" cy="137.3616" stroke="#000000"
+                stroke-opacity="0.4" stroke-width="1.0"/>
+        <circle fill-opacity="0.4" fill="#000000" r="10.0" cx="248.63576"
+                class="id_Nodo_25(0.00)" cy="-78.19868" stroke="#000000"
+                stroke-opacity="0.4" stroke-width="1.0"/>
+        <circle fill-opacity="0.4" fill="#000000" r="10.0" cx="336.1147"
+                class="id_Nodo_19(70.29)" cy="264.32544" stroke="#000000"
+                stroke-opacity="0.4" stroke-width="1.0"/>
+        <circle fill-opacity="0.4" fill="#000000" r="10.0" cx="99.9465"
+                class="id_Nodo_10(51.22)" cy="254.43839" stroke="#000000"
+                stroke-opacity="0.4" stroke-width="1.0"/>
+        <circle fill-opacity="0.4" fill="#000000" r="10.0" cx="501.5775"
+                class="id_Nodo_18(51.97)" cy="-330.92435" stroke="#000000"
+                stroke-opacity="0.4" stroke-width="1.0"/>
+        <circle fill-opacity="0.4" fill="#000000" r="10.0" cx="388.9559"
+                class="id_Nodo_23(43.14)" cy="-218.73013" stroke="#000000"
+                stroke-opacity="0.4" stroke-width="1.0"/>
+        <circle fill-opacity="0.4" fill="#000000" r="10.0" cx="114.205124"
+                class="id_Nodo_15(4.95)" cy="-178.2787" stroke="#000000"
+                stroke-opacity="0.4" stroke-width="1.0"/>
+    </g>
+    <g id="node-labels">
+        <text font-size="24" x="224.13594" y="142.99442" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_Nodo_13(33.57)">
+            Nodo_13(33.57)
+        </text>
+        <text font-size="24" x="248.63576" y="-72.565865" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_Nodo_25(0.00)">
+            Nodo_25(0.00)
+        </text>
+        <text font-size="24" x="336.1147" y="269.95825" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_Nodo_19(70.29)">
+            Nodo_19(70.29)
+        </text>
+        <text font-size="24" x="99.9465" y="260.0712" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_Nodo_10(51.22)">
+            Nodo_10(51.22)
+        </text>
+        <text font-size="24" x="501.5775" y="-325.29153" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_Nodo_18(51.97)">
+            Nodo_18(51.97)
+        </text>
+        <text font-size="24" x="388.9559" y="-213.09732" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_Nodo_23(43.14)">
+            Nodo_23(43.14)
+        </text>
+        <text font-size="24" x="114.205124" y="-172.64589" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_Nodo_15(4.95)">
+            Nodo_15(4.95)
+        </text>
+    </g>
+    <g id="edge-labels">
+        <text font-size="10" x="236.38585" y="29.581463" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_765">
+            33.57
+        </text>
+        <text font-size="10" x="280.1253" y="200.84352" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_766">
+            36.72
+        </text>
+        <text font-size="10" x="162.04123" y="195.9" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_767">
+            17.64
+        </text>
+        <text font-size="10" x="445.26672" y="-274.82724" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_768">
+            8.83
+        </text>
+        <text font-size="10" x="181.42044" y="-128.2387" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_769">
+            4.95
+        </text>
+        <text font-size="10" x="318.79584" y="-148.4644" fill="#000000"
+              style="text-anchor: middle; dominant-baseline: central;"
+              font-family="Arial" class="id_770">
+            43.14
+        </text>
+    </g>
+</svg>
