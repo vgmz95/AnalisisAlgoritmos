@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -22,8 +23,8 @@ import org.json.JSONObject;
 
 public class Graph {
 
-	private HashMap<String, Vertex> vertices;
-	private HashMap<String, List<Edge>> edges;
+	private Map<String, Vertex> vertices;
+	private Map<String, List<Edge>> edges;
 	private boolean directed;
 
 	private static final String DISTANCE = "distance";
@@ -283,7 +284,7 @@ public class Graph {
 		vertices.values().forEach(vertex -> {
 			vertex.getData().put(VISITED, false);
 		});
-		
+
 		stack.push(s);
 		s.getData().put(VISITED, true);
 
@@ -307,7 +308,7 @@ public class Graph {
 			List<Edge> adjList1 = entry.getValue();
 			for (Edge edge1 : adjList1) {
 				if (!edge1.getData().has(WEIGHT)) {
-					double weight = ThreadLocalRandom.current().nextDouble(min, max);
+					float weight = (float) ThreadLocalRandom.current().nextDouble(min, max);
 					edge1.getData().put(WEIGHT, weight); // n1->n2
 					if (!directed) { // n2->n1
 						List<Edge> adjList2 = getEdges().get(edge1.getNode2().getName());
@@ -329,10 +330,10 @@ public class Graph {
 		initializeSingleSource(vertices, source);
 		Set<Vertex> s = new HashSet<>();
 		// Priority queue keyed by distance
-		Queue<Vertex> q = new PriorityQueue<>((first, second) -> {
-			if (first.getData().getDouble(DISTANCE) > second.getData().getDouble(DISTANCE))
+		Queue<Vertex> q = new PriorityQueue<>(vertices.size(), (first, second) -> {
+			if (first.getData().getFloat(DISTANCE) > second.getData().getFloat(DISTANCE))
 				return 1;
-			else if (first.getData().getDouble(DISTANCE) < second.getData().getDouble(DISTANCE))
+			else if (first.getData().getFloat(DISTANCE) < second.getData().getFloat(DISTANCE))
 				return -1;
 			return 0;
 		});
@@ -344,8 +345,8 @@ public class Graph {
 			List<Edge> adjList = edges.get(u.getName());
 			for (Edge e : adjList) {
 				Vertex v = e.getNode2();
-				double weight = e.getData().getDouble(WEIGHT);
-				relax(u, v, weight);
+				float weight = e.getData().getFloat(WEIGHT);
+				relax(u, v, weight, q);				
 			}
 		}
 
@@ -377,25 +378,25 @@ public class Graph {
 		return g;
 	}
 
-
-	private void initializeSingleSource(HashMap<String, Vertex> vertices, Vertex source) {
+	private void initializeSingleSource(Map<String, Vertex> vertices, Vertex source) {
 		for (Entry<String, Vertex> vertex : vertices.entrySet()) {
-			vertex.getValue().getData().put(DISTANCE, Double.MAX_VALUE);
+			vertex.getValue().getData().put(DISTANCE, Float.valueOf(100000000.0f));
 			vertex.getValue().getData().put(PARENT, NIL);
 		}
-		source.getData().put(DISTANCE, 0.0);
+		source.getData().put(DISTANCE, Float.valueOf(0.0f));
 	}
 
-	private void relax(Vertex u, Vertex v, double weight) {		
-		if (v.getData().getDouble(DISTANCE) > u.getData().getDouble(DISTANCE) + weight) {
-			v.getData().put(DISTANCE, u.getData().getDouble(DISTANCE) + weight);
+	private void relax(Vertex u, Vertex v, float weight, Queue<Vertex> q) {
+		if (v.getData().getFloat(DISTANCE) > u.getData().getFloat(DISTANCE) + weight) {
+			v.getData().put(DISTANCE, u.getData().getFloat(DISTANCE) + weight);
 			v.getData().put(PARENT, u.getName());
-		}
+			q.offer(v);
+		} 
 	}
-	
+
 	private String generateVertexIdDijkstra(Vertex vertex) {
-		double distance = vertex.getData().getDouble(DISTANCE);
-		return String.format("Nodo_%s(%.2f)", vertex.getName(), distance );
+		float distance = vertex.getData().getFloat(DISTANCE);
+		return String.format("Nodo_%s(%.2f)", vertex.getName(), distance);
 	}
 
 	// Get vertex with max out degre
@@ -417,7 +418,7 @@ public class Graph {
 	}
 
 	// Getters and setters
-	public HashMap<String, Vertex> getVertices() {
+	public Map<String, Vertex> getVertices() {
 		return vertices;
 	}
 
@@ -425,7 +426,7 @@ public class Graph {
 		this.vertices = vertices;
 	}
 
-	public HashMap<String, List<Edge>> getEdges() {
+	public Map<String, List<Edge>> getEdges() {
 		return edges;
 	}
 
@@ -475,7 +476,7 @@ public class Graph {
 		for (Edge edge : auxEdges) {
 			str.append(edge.getId());
 			if (edge.getData().has(WEIGHT)) {
-				str.append(String.format(" [label=%.2f]", edge.getData().getDouble(WEIGHT)));
+				str.append(String.format(" [label=%.2f]", edge.getData().getFloat(WEIGHT)));
 			}
 			str.append(";\n");
 		}

@@ -120,6 +120,7 @@ public class Project3Test {
 		graph.randomEdgeValues(min, max);
 		graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
 		Vertex source = graph.getVertexNameWithMaxOutDegree();
+		//graph.dijkstra2(source);
 		(graph.dijkstra(source)).writeToFile(path, type + graph.getVertices().size() + "-Dijkstra" + fileExt);
 	}
 
