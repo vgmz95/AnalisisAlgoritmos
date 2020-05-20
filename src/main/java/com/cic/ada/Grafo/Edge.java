@@ -1,17 +1,25 @@
 package com.cic.ada.Grafo;
 
-import org.json.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Edge {
 	private String id;
 	private Vertex node1, node2;
-	private JSONObject data;
+	private final Map<String, Object> properties;
 
-	public Edge(String id, Vertex node1, Vertex node2, JSONObject data) {
+	public Edge(String id, Vertex node1, Vertex node2, Map<String, Object> properties) {
 		this.id = id;
 		this.node1 = node1;
 		this.node2 = node2;
-		this.data = data;
+		this.properties = new HashMap<>(properties);
+	}
+
+	public Edge(String id, Vertex node1, Vertex node2) {
+		this.id = id;
+		this.node1 = node1;
+		this.node2 = node2;
+		this.properties = new HashMap<String, Object>();
 	}
 
 	public String getId() {
@@ -38,12 +46,16 @@ public class Edge {
 		this.node2 = node2;
 	}
 
-	public JSONObject getData() {
-		return data;
+	public void setProperty(String key, Object value) {
+		this.properties.put(key, value);
 	}
 
-	public void setData(JSONObject data) {
-		this.data = data;
+	public Object getProperty(String key) {
+		return this.properties.get(key);
+	}
+
+	public Map<String, Object> getProperties() {
+		return properties;
 	}
 
 	@Override
@@ -82,6 +94,5 @@ public class Edge {
 			return false;
 		return true;
 	}
-
 
 }

@@ -1,19 +1,20 @@
 package com.cic.ada.Grafo;
 
-import org.json.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Vertex {
 	private String name;
-	private JSONObject data;
+	private final Map<String, Object> properties;
 
 	public Vertex(String name) {
 		this.name = name;
-		this.data = new JSONObject();
+		this.properties = new HashMap<String, Object>();
 	}
 
-	public Vertex(String name, JSONObject data) {
+	public Vertex(String name, Map<String, Object> properties) {
 		this.name = name;
-		this.data = data;
+		this.properties = new HashMap<>(properties);
 	}
 
 	public String getName() {
@@ -22,14 +23,6 @@ public class Vertex {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public JSONObject getData() {
-		return data;
-	}
-
-	public void setData(JSONObject data) {
-		this.data = data;
 	}
 
 	@Override
@@ -57,9 +50,16 @@ public class Vertex {
 		return true;
 	}
 
-	// Layer for BFS
-	public int getLayer() {
-		return this.getData().optInt("distance", -1);
+	public void setProperty(String key, Object value) {
+		this.properties.put(key, value);
+	}
+
+	public Object getProperty(String key) {
+		return this.properties.get(key);
+	}
+
+	public Map<String, Object> getProperties() {
+		return properties;
 	}
 
 }

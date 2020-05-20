@@ -19,7 +19,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.json.JSONObject;
 
 public class Graph {
 
@@ -33,7 +32,6 @@ public class Graph {
 	public static final String WEIGHT = "weight";
 	private static final String NIL = "nil";
 	private static final String PARENT = "parent";
-	private static final Float INF = 9999999999.9f;
 
 	public Graph() {
 		this.vertices = new HashMap<>();
@@ -57,12 +55,12 @@ public class Graph {
 		edges.put(vertex1.getName(), new ArrayList<Edge>());
 	}
 
-	public void addEdge(String id, Vertex vertex1, Vertex vertex2, JSONObject data) {
-		Edge edge = new Edge(id, vertex1, vertex2, data);
+	public void addEdge(String id, Vertex vertex1, Vertex vertex2, Map<String, Object> properties) {
+		Edge edge = new Edge(id, vertex1, vertex2, properties);
 		this.addEdge(edge);
 	}
 
-	public void addEdge(Vertex vertex1, Vertex vertex2, JSONObject data) {
+	public void addEdge(Vertex vertex1, Vertex vertex2, Map<String, Object> properties) {
 		if (!vertices.containsKey(vertex1.getName())) {
 			addVertex(vertex1);
 		}
@@ -72,10 +70,15 @@ public class Graph {
 		}
 
 		String id = generateEdgeId(vertex1, vertex2);
-		Edge edge = new Edge(id, vertex1, vertex2, data);
+		Edge edge = new Edge(id, vertex1, vertex2, properties);
 		this.addEdge(edge);
 	}
 
+	public void addEdge(Vertex vertex1, Vertex vertex2) {
+		this.addEdge(vertex1, vertex2, new HashMap<String, Object>());
+	}
+
+	// Real adding
 	public void addEdge(Edge edge) {
 		this.addEdgeHelper(edge);
 		if (!directed) {
@@ -90,7 +93,7 @@ public class Graph {
 
 	private Edge generateReverseEdge(Edge edge) {
 		String id = generateEdgeId(edge.getNode2(), edge.getNode1());
-		return new Edge(id, edge.getNode2(), edge.getNode1(), edge.getData());
+		return new Edge(id, edge.getNode2(), edge.getNode1(), edge.getProperties());
 	}
 
 	private String generateEdgeId(Vertex vertex1, Vertex vertex2) {
@@ -116,7 +119,7 @@ public class Graph {
 	public static Graph generateErdosRenyiGraph(int n, int m, boolean directed, boolean selfRelated) {
 		Graph graph = new Graph(directed);
 		// Create n vertices
-		IntStream.range(0, n).forEach(i -> graph.addVertex(new Vertex(i + "", new JSONObject())));
+		IntStream.range(0, n).forEach(i -> graph.addVertex(new Vertex(i + "")));
 
 		// Randomly choose m different pairs of different vertices
 		for (int i = 0; i < m; i++) {
@@ -129,7 +132,7 @@ public class Graph {
 			} else if (graph.existEdge(vertex1, vertex2)) {
 				i--;
 			} else {
-				graph.addEdge(vertex1, vertex2, new JSONObject());
+				graph.addEdge(vertex1, vertex2);
 			}
 		}
 		return graph;
@@ -139,7 +142,7 @@ public class Graph {
 	public static Graph generateGilbertGraph(int n, double p, boolean directed, boolean selfRelated) {
 		Graph graph = new Graph(directed);
 		// Create n vertices
-		IntStream.range(0, n).forEach(i -> graph.addVertex(new Vertex(i + "", new JSONObject())));
+		IntStream.range(0, n).forEach(i -> graph.addVertex(new Vertex(i + "")));
 
 		// Create an edge if random>=p
 		for (int i = 0; i < n; i++) {
@@ -151,7 +154,7 @@ public class Graph {
 					Vertex vertex1 = graph.getVertices().get(i + "");
 					Vertex vertex2 = graph.getVertices().get(j + "");
 					if (!graph.existEdge(vertex1, vertex2))
-						graph.addEdge(vertex1, vertex2, new JSONObject());
+						graph.addEdge(vertex1, vertex2);
 				}
 			}
 		}
@@ -164,10 +167,12 @@ public class Graph {
 
 		// Create n vertices
 		IntStream.range(0, n).forEach(i -> {
-			double x = ThreadLocalRandom.current().nextDouble();
-			double y = ThreadLocalRandom.current().nextDouble();
-			JSONObject info = new JSONObject().put("x", x).put("y", y);
-			graph.addVertex(new Vertex(i + "", info));
+			Double x = ThreadLocalRandom.current().nextDouble();
+			Double y = ThreadLocalRandom.current().nextDouble();
+			Vertex vertex = new Vertex(i + "");
+			vertex.setProperty("x", x);
+			vertex.setProperty("y", y);
+			graph.addVertex(vertex);
 		});
 
 		// Create an edge if random>=p
@@ -180,12 +185,12 @@ public class Graph {
 				Vertex vertex2 = graph.getVertices().get(j + "");
 				if (!graph.existEdge(vertex1, vertex2)) {
 					// Calculate distance
-					double x_1 = vertex1.getData().getDouble("x"), y_1 = vertex1.getData().getDouble("y");
-					double x_2 = vertex2.getData().getDouble("x"), y_2 = vertex2.getData().getDouble("y");
-					double x_diff = Math.pow(x_2 - x_1, 2.0), y_diff = Math.pow(y_2 - y_1, 2.0);
-					double distance = Math.sqrt(x_diff + y_diff);
+					Double x_1 = (Double) vertex1.getProperty("x"), y_1 = (Double) vertex1.getProperty("y");
+					Double x_2 = (Double) vertex2.getProperty("x"), y_2 = (Double) vertex2.getProperty("y");
+					Double x_diff = Math.pow(x_2 - x_1, 2.0), y_diff = Math.pow(y_2 - y_1, 2.0);
+					Double distance = Math.sqrt(x_diff + y_diff);
 					if (distance <= r) { // Create vertex if distance <= radius
-						graph.addEdge(vertex1, vertex2, new JSONObject());
+						graph.addEdge(vertex1, vertex2);
 					}
 				}
 			}
@@ -197,7 +202,7 @@ public class Graph {
 	public static Graph generateBarabasiAlbertGraph(int n, double d, boolean directed, boolean selfRelated) {
 		Graph graph = new Graph(directed);
 		// Create n vertices
-		IntStream.range(0, n).forEach(i -> graph.addVertex(new Vertex(i + "", new JSONObject())));
+		IntStream.range(0, n).forEach(i -> graph.addVertex(new Vertex(i + "")));
 
 		// Create random int array from to [0,n)
 		List<Integer> arrayInt = IntStream.range(0, n).boxed().collect(Collectors.toList()); // [0,n)
@@ -209,7 +214,7 @@ public class Graph {
 			Vertex vertex1 = graph.getVertices().get(arrayInt.get(i) + "");
 			for (int j = i + 1; j < D; j++) {
 				Vertex vertex2 = graph.getVertices().get(arrayInt.get(j) + "");
-				graph.addEdge(vertex1, vertex2, new JSONObject());
+				graph.addEdge(vertex1, vertex2);
 			}
 		}
 
@@ -222,7 +227,7 @@ public class Graph {
 				double random = ThreadLocalRandom.current().nextDouble();
 				double p = 1 - (double) (nodeDegree / d);
 				if (random <= p) {
-					graph.addEdge(vertex1, vertex2, new JSONObject());
+					graph.addEdge(vertex1, vertex2);
 				}
 			}
 		}
@@ -233,11 +238,12 @@ public class Graph {
 		Graph g = new Graph(false);
 
 		vertices.values().forEach(vertex -> {// distance == layer
-			vertex.getData().put(DISCOVERED, false).put(DISTANCE, Integer.MAX_VALUE);
+			vertex.setProperty(DISCOVERED, Boolean.FALSE);
+			vertex.setProperty(DISTANCE, Integer.MAX_VALUE);
 		});
 
-		s.getData().put(DISCOVERED, true);
-		s.getData().put(DISTANCE, 0);
+		s.setProperty(DISCOVERED, true);
+		s.setProperty(DISTANCE, Integer.valueOf(0));
 
 		Queue<Vertex> q = new LinkedList<>();
 		q.add(s);
@@ -247,10 +253,12 @@ public class Graph {
 			List<Edge> adjList = edges.get(u.getName());
 			adjList.forEach(edge -> {
 				Vertex v = edge.getNode2();
-				if (!v.getData().getBoolean(DISCOVERED)) {
-					v.getData().put(DISCOVERED, true).put(DISTANCE, u.getData().getInt(DISTANCE) + 1);
+				boolean discovered = ((Boolean) v.getProperty(DISCOVERED)).booleanValue();
+				if (!discovered) {
+					v.setProperty(DISCOVERED, Boolean.TRUE);
+					v.setProperty(DISTANCE, Integer.valueOf((Integer) u.getProperty(DISTANCE) + 1));
 					q.add(v);
-					g.addEdge(u, v, new JSONObject());
+					g.addEdge(u, v);
 				}
 			});
 		}
@@ -261,19 +269,20 @@ public class Graph {
 	public Graph DFS_R(Vertex s) {
 		Graph g = new Graph(false);
 		vertices.values().forEach(vertex -> {
-			vertex.getData().put(VISITED, false);
+			vertex.setProperty(VISITED, Boolean.FALSE);
 		});
 		DFS_R_Helper(s, g);
 		return g;
 	}
 
 	public void DFS_R_Helper(Vertex u, Graph g) {
-		u.getData().put(VISITED, true);
+		u.setProperty(VISITED, Boolean.TRUE);
 		List<Edge> adjList = edges.get(u.getName());
 		adjList.forEach(edge -> {
 			Vertex v = edge.getNode2();
-			if (!v.getData().getBoolean(VISITED)) {
-				g.addEdge(u, v, new JSONObject());
+			boolean visited = ((Boolean) v.getProperty(VISITED)).booleanValue();
+			if (!visited) {
+				g.addEdge(u, v);
 				DFS_R_Helper(v, g);
 			}
 		});
@@ -283,20 +292,21 @@ public class Graph {
 		Graph g = new Graph(false);
 		Stack<Vertex> stack = new Stack<>();
 		vertices.values().forEach(vertex -> {
-			vertex.getData().put(VISITED, false);
+			vertex.setProperty(VISITED, Boolean.FALSE);
 		});
 
 		stack.push(s);
-		s.getData().put(VISITED, true);
+		s.setProperty(VISITED, Boolean.TRUE);
 
 		while (!stack.empty()) {
 			Vertex u = stack.pop();
 			List<Edge> adjList = edges.get(u.getName());
 			adjList.forEach(edge -> {
 				Vertex v = edge.getNode2();
-				if (!v.getData().getBoolean(VISITED)) {
-					v.getData().put(VISITED, true);
-					g.addEdge(u, v, new JSONObject());
+				boolean visited = ((Boolean) v.getProperty(VISITED)).booleanValue();
+				if (!visited) {
+					v.setProperty(VISITED, Boolean.TRUE);
+					g.addEdge(u, v);
 					stack.push(v);
 				}
 			});
@@ -308,14 +318,14 @@ public class Graph {
 		for (Entry<String, List<Edge>> entry : getEdges().entrySet()) {
 			List<Edge> adjList1 = entry.getValue();
 			for (Edge edge1 : adjList1) {
-				if (!edge1.getData().has(WEIGHT)) {
-					float weight = (float) ThreadLocalRandom.current().nextDouble(min, max);
-					edge1.getData().put(WEIGHT, weight); // n1->n2
+				if (!edge1.getProperties().containsKey(WEIGHT)) {
+					Float weight = (float) ThreadLocalRandom.current().nextDouble(min, max);
+					edge1.setProperty(WEIGHT, weight); // n1->n2
 					if (!directed) { // n2->n1
 						List<Edge> adjList2 = getEdges().get(edge1.getNode2().getName());
 						for (Edge edge2 : adjList2) {
 							if ((edge2.getNode2()).equals(edge1.getNode1())) {
-								edge2.getData().put(WEIGHT, weight);
+								edge2.setProperty(WEIGHT, weight);
 								break;
 							}
 						}
@@ -332,9 +342,9 @@ public class Graph {
 		Set<Vertex> s = new HashSet<>();
 		// Priority queue keyed by distance
 		Queue<Vertex> q = new PriorityQueue<>(vertices.size(), (first, second) -> {
-			if (first.getData().getFloat(DISTANCE) > second.getData().getFloat(DISTANCE))
+			if ((Float) first.getProperty(DISTANCE) > (Float) second.getProperty(DISTANCE))
 				return 1;
-			else if (first.getData().getFloat(DISTANCE) < second.getData().getFloat(DISTANCE))
+			else if ((Float) first.getProperty(DISTANCE) < (Float) second.getProperty(DISTANCE))
 				return -1;
 			return 0;
 		});
@@ -346,7 +356,7 @@ public class Graph {
 			List<Edge> adjList = edges.get(u.getName());
 			for (Edge e : adjList) {
 				Vertex v = e.getNode2();
-				float weight = e.getData().getFloat(WEIGHT);
+				Float weight = (Float) e.getProperty(WEIGHT);
 				relax(u, v, weight, q);
 			}
 		}
@@ -356,21 +366,21 @@ public class Graph {
 		// Add vertices and edges
 		for (Vertex vertex : s) {
 			// Skip if source
-			if (vertex.getData().get(PARENT).equals(NIL))
+			if (((String) vertex.getProperty(PARENT)).equals(NIL))
 				continue;
 
-			Vertex node1 = vertices.get(vertex.getData().get(PARENT));
+			Vertex node1 = vertices.get((String) vertex.getProperty(PARENT));
 			Vertex node2 = vertex;
 			String node1Id = generateVertexIdDijkstra(node1);
 			String node2Id = generateVertexIdDijkstra(node2);
 
-			Vertex auxNode1 = new Vertex(node1Id, node1.getData());
-			Vertex auxNode2 = new Vertex(node2Id, node2.getData());
+			Vertex auxNode1 = new Vertex(node1Id, node1.getProperties());
+			Vertex auxNode2 = new Vertex(node2Id, node2.getProperties());
 			List<Edge> adjList2 = getEdges().get(node1.getName());
-			JSONObject vertexData = new JSONObject();
+			Map<String, Object> vertexData = new HashMap<String, Object>();
 			for (Edge edge2 : adjList2) {
 				if ((edge2.getNode2()).equals(node2)) {
-					vertexData = edge2.getData();
+					vertexData = edge2.getProperties();
 					break;
 				}
 			}
@@ -381,23 +391,23 @@ public class Graph {
 	}
 
 	private void initializeSingleSource(Map<String, Vertex> vertices, Vertex source) {
-		for (Entry<String, Vertex> vertex : vertices.entrySet()) {
-			vertex.getValue().getData().put(DISTANCE, INF);
-			vertex.getValue().getData().put(PARENT, NIL);
+		for (Entry<String, Vertex> vertexEntry : vertices.entrySet()) {
+			vertexEntry.getValue().setProperty(DISTANCE, Float.POSITIVE_INFINITY);
+			vertexEntry.getValue().setProperty(PARENT, NIL);
 		}
-		source.getData().put(DISTANCE, Float.valueOf(0.0f));
+		source.setProperty(DISTANCE, Float.valueOf(0.0f));
 	}
 
 	private void relax(Vertex u, Vertex v, float weight, Queue<Vertex> q) {
-		if (v.getData().getFloat(DISTANCE) > u.getData().getFloat(DISTANCE) + weight) {
-			v.getData().put(DISTANCE, u.getData().getFloat(DISTANCE) + weight);
-			v.getData().put(PARENT, u.getName());
+		if ((Float) v.getProperty(DISTANCE) > (Float) u.getProperty(DISTANCE) + weight) {
+			v.setProperty(DISTANCE, Float.valueOf((Float) u.getProperty(DISTANCE) + weight));
+			v.setProperty(PARENT, u.getName());
 			q.offer(v);
 		}
 	}
 
 	private String generateVertexIdDijkstra(Vertex vertex) {
-		float distance = vertex.getData().getFloat(DISTANCE);
+		Float distance = (Float) vertex.getProperty(DISTANCE);
 		return String.format("Nodo_%s(%.2f)", vertex.getName(), distance);
 	}
 
@@ -477,20 +487,11 @@ public class Graph {
 		// Edges to string
 		for (Edge edge : auxEdges) {
 			str.append(edge.getId());
-			if (edge.getData().has(WEIGHT)) {
-				str.append(String.format(" [label=%.2f]", edge.getData().getFloat(WEIGHT)));
+			if (edge.getProperties().containsKey(WEIGHT)) {
+				str.append(String.format(" [label=%.2f]", (Float)edge.getProperty(WEIGHT)));
 			}
 			str.append(";\n");
 		}
-
-		/*
-		 * Layer -doesn't work with gephi :( - Map<Integer, List<Vertex>> layers =
-		 * this.vertices.values().stream()
-		 * .collect(Collectors.groupingBy(Vertex::getLayer));
-		 * layers.values().forEach(list -> { str.append("{ rank = same; ");
-		 * list.forEach(element -> { str.append(element.getName() + "; "); });
-		 * str.append("}\n"); });
-		 */
 
 		str.append("}");
 		return str.toString();

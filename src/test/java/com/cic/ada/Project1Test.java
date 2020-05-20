@@ -12,7 +12,7 @@ public class Project1Test {
 	@Test
 	public void AddVertex() {
 		Graph graph = new Graph(false);
-		Vertex vertex = new Vertex("test", null);
+		Vertex vertex = new Vertex("test");
 		graph.addVertex(vertex);
 		Vertex result = graph.getVertices().get("test");
 		assertNotNull(result);
@@ -22,9 +22,9 @@ public class Project1Test {
 	@Test
 	public void AddEdge() {
 		Graph graph = new Graph(false);
-		Vertex vertex1 = new Vertex("test1", null);
-		Vertex vertex2 = new Vertex("test2", null);
-		Vertex vertex3 = new Vertex("test3", null);
+		Vertex vertex1 = new Vertex("test1");
+		Vertex vertex2 = new Vertex("test2");
+		Vertex vertex3 = new Vertex("test3");
 		graph.addVertex(vertex1);
 		graph.addVertex(vertex2);
 		graph.addVertex(vertex3);
@@ -37,9 +37,9 @@ public class Project1Test {
 	@Test
 	public void CheckIfVertexExist() {
 		Graph graph = new Graph(false); // Not directed
-		Vertex vertex1 = new Vertex("test1", null);
-		Vertex vertex2 = new Vertex("test2", null);
-		Vertex vertex3 = new Vertex("test3", null);
+		Vertex vertex1 = new Vertex("test1");
+		Vertex vertex2 = new Vertex("test2");
+		Vertex vertex3 = new Vertex("test3");
 		graph.addVertex(vertex1);
 		graph.addVertex(vertex2);
 		graph.addVertex(vertex3);

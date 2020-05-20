@@ -1,9 +1,11 @@
 package com.cic.ada;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.cic.ada.Grafo.Graph;
 import com.cic.ada.Grafo.Vertex;
-import org.json.JSONObject;
 import org.junit.Test;
 
 public class Project3Test {
@@ -27,11 +29,11 @@ public class Project3Test {
 		Graph g = new Graph(true);
 		String type = "CLRSExample";
 		// Vertices
-		Vertex s = new Vertex("s", new JSONObject());
-		Vertex t = new Vertex("t", new JSONObject());
-		Vertex x = new Vertex("x", new JSONObject());
-		Vertex y = new Vertex("y", new JSONObject());
-		Vertex z = new Vertex("z", new JSONObject());
+		Vertex s = new Vertex("s");
+		Vertex t = new Vertex("t");
+		Vertex x = new Vertex("x");
+		Vertex y = new Vertex("y");
+		Vertex z = new Vertex("z");
 		g.addVertex(s);
 		g.addVertex(t);
 		g.addVertex(x);
@@ -39,20 +41,31 @@ public class Project3Test {
 		g.addVertex(z);
 		// Edges
 		//s 
-		g.addEdge(s, t, new JSONObject().put(Graph.WEIGHT, 10.0));
-		g.addEdge(s, y, new JSONObject().put(Graph.WEIGHT, 5.0));
+		Map<String, Object> properties = new HashMap<>();
+		properties.put(Graph.WEIGHT, Float.valueOf(10.0f));
+		g.addEdge(s, t, properties);
+		properties.put(Graph.WEIGHT, Float.valueOf(5.0f));
+		g.addEdge(s, y, properties);
 		//t
-		g.addEdge(t, y, new JSONObject().put(Graph.WEIGHT, 2.0));
-		g.addEdge(t, x, new JSONObject().put(Graph.WEIGHT, 1.0));
+		properties.put(Graph.WEIGHT, Float.valueOf(2.0f));
+		g.addEdge(t, y, properties);
+		properties.put(Graph.WEIGHT, Float.valueOf(1.0f));
+		g.addEdge(t, x, properties);
 		//x
-		g.addEdge(x, z, new JSONObject().put(Graph.WEIGHT, 10.0));
+		properties.put(Graph.WEIGHT, Float.valueOf(10.0f));
+		g.addEdge(x, z, properties);
 		//y 
-		g.addEdge(y, t, new JSONObject().put(Graph.WEIGHT, 3.0));
-		g.addEdge(y, z, new JSONObject().put(Graph.WEIGHT, 2.0));
-		g.addEdge(y, x, new JSONObject().put(Graph.WEIGHT, 9.0));
+		properties.put(Graph.WEIGHT, Float.valueOf(3.0f));
+		g.addEdge(y, t, properties);
+		properties.put(Graph.WEIGHT, Float.valueOf(2.0f));
+		g.addEdge(y, z, properties);
+		properties.put(Graph.WEIGHT, Float.valueOf(9.0f));
+		g.addEdge(y, x, properties);
 		//z
-		g.addEdge(z, x, new JSONObject().put(Graph.WEIGHT, 6.0));
-		g.addEdge(z, s, new JSONObject().put(Graph.WEIGHT, 7.0));	
+		properties.put(Graph.WEIGHT, Float.valueOf(6.0f));
+		g.addEdge(z, x, properties);
+		properties.put(Graph.WEIGHT, Float.valueOf(7.0f));
+		g.addEdge(z, s, properties);	
 
 		// Shortest path
 		Graph result = g.dijkstra(s);

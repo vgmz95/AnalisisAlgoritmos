@@ -4,7 +4,6 @@ import java.io.IOException;
 import com.cic.ada.Grafo.Graph;
 import com.cic.ada.Grafo.Vertex;
 
-import org.json.JSONObject;
 import org.junit.Test;
 
 public class Project2Test {
@@ -34,16 +33,16 @@ public class Project2Test {
 		w = new Vertex("w");
 		x = new Vertex("x");
 		y = new Vertex("y");
-		graph.addEdge(r, s, new JSONObject());
-		graph.addEdge(r, v, new JSONObject());
-		graph.addEdge(s, w, new JSONObject());
-		graph.addEdge(w, x, new JSONObject());
-		graph.addEdge(w, t, new JSONObject());
-		graph.addEdge(t, u, new JSONObject());
-		graph.addEdge(t, x, new JSONObject());
-		graph.addEdge(x, u, new JSONObject());
-		graph.addEdge(x, y, new JSONObject());
-		graph.addEdge(y, u, new JSONObject());
+		graph.addEdge(r, s);
+		graph.addEdge(r, v);
+		graph.addEdge(s, w);
+		graph.addEdge(w, x);
+		graph.addEdge(w, t);
+		graph.addEdge(t, u);
+		graph.addEdge(t, x);
+		graph.addEdge(x, u);
+		graph.addEdge(x, y);
+		graph.addEdge(y, u);
 		Graph bfs = graph.BFS(s);
 		bfs.writeToFile(path, type + graph.getVertices().size() + fileExt);	
 	}
@@ -59,13 +58,13 @@ public class Project2Test {
 		x = new Vertex("x");
 		y = new Vertex("y");
 		z = new Vertex("z");
-		graph.addEdge(u,v, new JSONObject());
-		graph.addEdge(u,x, new JSONObject());
-		graph.addEdge(x,v, new JSONObject());
-		graph.addEdge(v,y, new JSONObject());
-		graph.addEdge(w,y, new JSONObject());
-		graph.addEdge(w,z, new JSONObject());
-		graph.addEdge(z,z, new JSONObject());	
+		graph.addEdge(u,v);
+		graph.addEdge(u,x);
+		graph.addEdge(x,v);
+		graph.addEdge(v,y);
+		graph.addEdge(w,y);
+		graph.addEdge(w,z);
+		graph.addEdge(z,z);	
 		Graph bfs = graph.DFS_R(u);
 		bfs.writeToFile(path, type + graph.getVertices().size() + fileExt);	
 	}
