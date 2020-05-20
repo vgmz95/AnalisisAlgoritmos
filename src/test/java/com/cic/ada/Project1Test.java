@@ -28,7 +28,7 @@ public class Project1Test {
 		graph.addVertex(vertex1);
 		graph.addVertex(vertex2);
 		graph.addVertex(vertex3);
-		graph.addEdge(vertex1, vertex2, null);
+		graph.addEdge(vertex1, vertex2);
 		assertTrue(graph.existEdge(vertex1, vertex2));
 		assertTrue(graph.existEdge(vertex2, vertex1));
 		assertTrue(!graph.existEdge(vertex1, vertex3));
@@ -43,7 +43,7 @@ public class Project1Test {
 		graph.addVertex(vertex1);
 		graph.addVertex(vertex2);
 		graph.addVertex(vertex3);
-		graph.addEdge(vertex1, vertex2, null);
+		graph.addEdge(vertex1, vertex2);
 		assertTrue(graph.existEdge(vertex1, vertex2));
 		assertTrue(graph.existEdge(vertex2, vertex1));
 		assertTrue(!graph.existEdge(vertex1, vertex3));
