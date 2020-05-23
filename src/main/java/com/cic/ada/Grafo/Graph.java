@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -361,7 +362,7 @@ public class Graph {
 			}
 		}
 
-		// New graph construction
+		// New graph reconstruction
 		Graph g = new Graph(directed);
 		// Add vertices and edges
 		for (Vertex vertex : s) {
@@ -422,6 +423,49 @@ public class Graph {
 		}).get();
 
 		return this.vertices.get(entry.getKey());
+	}
+
+	// CLRS pag 631
+	public Graph Kruskal_D() {
+		// Result
+		Graph a = new Graph(this.directed);
+		float mstCost = 0.0f;
+		// Make set
+		for (Vertex v : this.vertices.values()) {
+			makeSet(v);
+		}
+		// Sort all edges
+		List<Edge> allEdges = new ArrayList<>();
+		edges.values().forEach(edges -> allEdges.addAll(edges));
+		Collections.sort(allEdges, new EdgeWeightComparator());
+
+		for (Edge edge : allEdges) {
+			Vertex u = edge.getNode1(), v = edge.getNode2();
+			String uSet = findSet(u), vSet = findSet(v);
+			if (!uSet.equals(vSet)) {
+				a.addEdge(u, v, edge.getProperties());
+				mstCost += (Float) edge.getProperty(WEIGHT);
+				union(uSet, vSet);
+			}
+		}
+		System.out.println("MST Prim cost: " + mstCost);
+		return a;
+	}
+
+	private void union(String uSet, String vSet) {
+		this.vertices.get(uSet).setProperty(PARENT, vSet);
+	}
+
+	private void makeSet(Vertex v) {
+		v.setProperty(PARENT, v.getName());
+	}
+
+	private String findSet(Vertex node) {
+		String parent = (String) node.getProperty(PARENT);
+		if (parent.equals(node.getName()))
+			return node.getName();
+		else
+			return findSet(this.vertices.get(parent));
 	}
 
 	// To file
@@ -488,13 +532,24 @@ public class Graph {
 		for (Edge edge : auxEdges) {
 			str.append(edge.getId());
 			if (edge.getProperties().containsKey(WEIGHT)) {
-				str.append(String.format(" [label=%.2f]", (Float)edge.getProperty(WEIGHT)));
+				str.append(String.format(" [label=%.2f]", (Float) edge.getProperty(WEIGHT)));
 			}
 			str.append(";\n");
 		}
 
 		str.append("}");
 		return str.toString();
+	}
+
+	public class EdgeWeightComparator implements Comparator<Edge> {
+		@Override
+		public int compare(Edge first, Edge second) {
+			if ((Float) first.getProperty(WEIGHT) > (Float) second.getProperty(WEIGHT))
+				return 1;
+			else if ((Float) first.getProperty(WEIGHT) < (Float) second.getProperty(WEIGHT))
+				return -1;
+			return 0;
+		}
 	}
 
 }
