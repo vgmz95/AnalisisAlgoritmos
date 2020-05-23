@@ -13,11 +13,11 @@ public class Project3Test {
 	int many = 100; // Many nodes (<100)
 	int lots = 500; // Lots of nodes
 	float min = 1.0f, max = 50.0f;
-	String path = "C:\\Users\\victo\\Documents\\grafos\\ArchivosGenerados_Proyecto3";
+	String path = "/home/victor/Documents/grafos/ArchivosGenerados_Proyecto3";
 	String fileExt = ".gv";
 
 	@Test
-	public void testRandomEdges() throws IOException {
+	public void randomEdgesTest() throws IOException {
 		String type = "randomWeights";
 		Graph graph = Graph.generateBarabasiAlbertGraph(30, 12, false, false);
 		graph.randomEdgeValues(0, 20);		
@@ -95,10 +95,10 @@ public class Project3Test {
 	@Test
 	public void gilbertShortestPathTest() throws IOException {
 		String type = "2_Gilbert-";
-		Graph[] GilbertGraphs = { Graph.generateGilbertGraph(few, 0.02, false, false),
+		Graph[] gilbertGraphs = { Graph.generateGilbertGraph(few, 0.02, false, false),
 				Graph.generateGilbertGraph(many, 0.02, false, false),
 				Graph.generateGilbertGraph(lots, 0.02, false, false), };
-		for (Graph graph : GilbertGraphs) {		
+		for (Graph graph : gilbertGraphs) {		
 			shortestPath(type, graph);
 		}
 	}
@@ -107,11 +107,11 @@ public class Project3Test {
 	public void geoGraphicShortestPathTest() throws IOException {
 		String type = "3_Geograph-";
 
-		Graph[] GeoGraphs = { Graph.generateGeographicGraph(few, 0.5, false, false),
+		Graph[] geoGraphs = { Graph.generateGeographicGraph(few, 0.5, false, false),
 				Graph.generateGeographicGraph(many, 0.2, false, false),
 				Graph.generateGeographicGraph(lots, 0.08, false, false), };
 
-		for (Graph graph : GeoGraphs) {			
+		for (Graph graph : geoGraphs) {			
 			shortestPath(type, graph);
 		}
 

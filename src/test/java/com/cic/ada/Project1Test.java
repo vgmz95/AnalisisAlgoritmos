@@ -10,7 +10,7 @@ import org.junit.Test;
 
 public class Project1Test {
 	@Test
-	public void AddVertex() {
+	public void addVertexTest() {
 		Graph graph = new Graph(false);
 		Vertex vertex = new Vertex("test");
 		graph.addVertex(vertex);
@@ -20,7 +20,7 @@ public class Project1Test {
 	}
 
 	@Test
-	public void AddEdge() {
+	public void addEdgeTest() {
 		Graph graph = new Graph(false);
 		Vertex vertex1 = new Vertex("test1");
 		Vertex vertex2 = new Vertex("test2");
@@ -35,7 +35,7 @@ public class Project1Test {
 	}
 
 	@Test
-	public void CheckIfVertexExist() {
+	public void checkIfVertexExistTest() {
 		Graph graph = new Graph(false); // Not directed
 		Vertex vertex1 = new Vertex("test1");
 		Vertex vertex2 = new Vertex("test2");
@@ -53,7 +53,7 @@ public class Project1Test {
 	 * Test Erdos-Renyi Graph Generation
 	 */
 	@Test
-	public void ErdosRenyiTest() {
+	public void erdosRenyiTest() {
 		int n = 200, m = 300;
 		Graph graph = Graph.generateErdosRenyiGraph(n, m, false, true);
 		System.out.println("Graph: \n" + graph.toString());
@@ -63,7 +63,7 @@ public class Project1Test {
 	 * Test Gilbert Graph Generation
 	 */
 	@Test
-	public void GilbertTest() {
+	public void gilbertTest() {
 		int n = 25;
 		double m = 0.5;
 		Graph graph = Graph.generateGilbertGraph(n, m, false, true);
@@ -76,7 +76,7 @@ public class Project1Test {
 	 * @throws IOException
 	 */
 	@Test
-	public void GeographicTest() throws IOException {
+	public void geographicTest() throws IOException {
 		int n = 200;
 		double r = 0.3;
 		Graph graph = Graph.generateGeographicGraph(n, r, false, true);
@@ -87,7 +87,7 @@ public class Project1Test {
 	 * Test Barabasi Albert Graph Generation
 	 */
 	@Test
-	public void BarabasiAlbertTest() {
+	public void barabasiAlbertTest() {
 		int n = 20;
 		double m = 2;
 		Graph graph = Graph.generateBarabasiAlbertGraph(n, m, false, true);
@@ -99,11 +99,11 @@ public class Project1Test {
 	int few = 30; // Few nodes (<50)
 	int many = 100; // Many nodes (<100)
 	int lots = 500; // Lots of nodes
-	String path = "C:\\Users\\victo\\Documents\\grafos";
+	String path = "/home/victor/Documents/grafos/ArchivosGenerados_Proyecto1";
 	String fileExt = ".gv";
 
 	@Test
-	public void ErdosRenyiFileTest() throws IOException {
+	public void erdosRenyiFileTest() throws IOException {
 		// Erdos-Renyi
 		Graph[] erdosRenyiGraphs = { Graph.generateErdosRenyiGraph(few, 100, false, false),
 				Graph.generateErdosRenyiGraph(many, 200, false, false),
@@ -114,32 +114,32 @@ public class Project1Test {
 	}
 
 	@Test
-	public void GilbertFileTest() throws IOException {
+	public void gilbertFileTest() throws IOException {
 		// Gilbert
-		Graph[] GilbertGraphs = { Graph.generateGilbertGraph(few, 0.02, false, false),
+		Graph[] gilbertGraphs = { Graph.generateGilbertGraph(few, 0.02, false, false),
 				Graph.generateGilbertGraph(many, 0.02, false, false),
 				Graph.generateGilbertGraph(lots, 0.02, false, false), };
 
-		for (Graph graph : GilbertGraphs) {
+		for (Graph graph : gilbertGraphs) {
 			graph.writeToFile(path, "2_Gilbert-" + graph.getVertices().size() + fileExt);
 		}
 	}
 
 	@Test
-	public void GeographicFileTest() throws IOException {
+	public void geographicFileTest() throws IOException {
 		// Geographical
-		Graph[] GeoGraphs = { Graph.generateGeographicGraph(few, 0.5, false, false),
+		Graph[] geoGraphs = { Graph.generateGeographicGraph(few, 0.5, false, false),
 				Graph.generateGeographicGraph(many, 0.2, false, false),
 				Graph.generateGeographicGraph(lots, 0.08, false, false), };
 
-		for (Graph graph : GeoGraphs) {
+		for (Graph graph : geoGraphs) {
 			graph.writeToFile(path, "3_Geograph-" + graph.getVertices().size() + fileExt);
 		}
 
 	}
 
 	@Test
-	public void BarabasiAlbertFileTest() throws IOException {
+	public void barabasiAlbertFileTest() throws IOException {
 		// Barabasi-Albert graphs
 		Graph[] barabasiGraphs = { Graph.generateBarabasiAlbertGraph(few, 12, false, false),
 				Graph.generateBarabasiAlbertGraph(many, 12, false, false),

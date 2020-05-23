@@ -41,7 +41,7 @@ public class Project4Test {
 
     // CLRS pag 632
     @Test
-    public void CLRSPrimTest() throws IOException {
+    public void clrsMstTest() throws IOException {
         String type = "CLRSExample";
         Graph graph = new Graph(false);
         // Vertices
@@ -122,7 +122,7 @@ public class Project4Test {
 		graph.Kruskal_D().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_D" + fileExt);
         graph.Kruskal_I().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_I" + fileExt);
         graph.Prim().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);
-	
+        
 	}
     
 }

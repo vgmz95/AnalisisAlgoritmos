@@ -88,7 +88,7 @@ public class Graph {
 		}
 	}
 
-	public void addEdgeHelper(Edge edge) {
+	private void addEdgeHelper(Edge edge) {
 		edges.get(edge.getNode1().getName()).add(edge);
 	}
 

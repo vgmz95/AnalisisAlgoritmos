@@ -11,17 +11,17 @@ public class Project2Test {
 	int few = 30; // Few nodes (<50)
 	int many = 100; // Many nodes (<100)
 	int lots = 500; // Lots of nodes
-	String path = "C:\\Users\\victo\\Documents\\grafos\\ArchivosGenerados_Proyecto2";
+	String path = "/home/victor/Documents/grafos/ArchivosGenerados_Proyecto2";
 	String fileExt = ".gv";
 
 	@Test
-	public void TraversalCLRS() throws IOException {
-		bfsCLRS();
-		dfsCLRS();		
+	public void traversalClrsTest() throws IOException {
+		bfsClrsTest();
+		dfsClrsTest();		
 	}
 
 	@Test
-	public void bfsCLRS() throws IOException {
+	public void bfsClrsTest() throws IOException {
 		Graph graph = new Graph(false);
 		Vertex r,s,t,u,v,w,x,y;
 		String type = "BFS-CLRS-";
@@ -48,7 +48,7 @@ public class Project2Test {
 	}
 
 	@Test
-	public void dfsCLRS() throws IOException {
+	public void dfsClrsTest() throws IOException {
 		Graph graph = new Graph(true);
 		Vertex u,v,w,x,y,z;
 		String type = "DFSR-CLRS-";	
