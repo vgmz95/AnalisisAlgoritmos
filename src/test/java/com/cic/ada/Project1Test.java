@@ -9,6 +9,69 @@ import com.cic.ada.Grafo.Vertex;
 import org.junit.Test;
 
 public class Project1Test {
+
+	int few = 30; // Few nodes (<50)
+	int many = 100; // Many nodes (<100)
+	int lots = 500; // Lots of nodes
+	String path = "/home/victor/Documents/grafos/ArchivosGenerados_Proyecto1";
+	String fileExt = ".gv";
+
+	@Test
+	public void graphGenerationTest() throws IOException {
+		erdosRenyiFileTest();
+		gilbertFileTest();
+		geographicFileTest();
+		barabasiAlbertFileTest();
+	}
+
+	/* Write to file tests */
+	@Test
+	public void erdosRenyiFileTest() throws IOException {
+		// Erdos-Renyi
+		Graph[] erdosRenyiGraphs = { Graph.generateErdosRenyiGraph(few, 100, false, false),
+				Graph.generateErdosRenyiGraph(many, 200, false, false),
+				Graph.generateErdosRenyiGraph(lots, 300, false, false), };
+		for (Graph graph : erdosRenyiGraphs) {
+			graph.writeToFile(path, "1_ErdosRenyi-" + graph.getVertices().size() + fileExt);
+		}
+	}
+
+	@Test
+	public void gilbertFileTest() throws IOException {
+		// Gilbert
+		Graph[] gilbertGraphs = { Graph.generateGilbertGraph(few, 0.02, false, false),
+				Graph.generateGilbertGraph(many, 0.02, false, false),
+				Graph.generateGilbertGraph(lots, 0.02, false, false), };
+
+		for (Graph graph : gilbertGraphs) {
+			graph.writeToFile(path, "2_Gilbert-" + graph.getVertices().size() + fileExt);
+		}
+	}
+
+	@Test
+	public void geographicFileTest() throws IOException {
+		// Geographical
+		Graph[] geoGraphs = { Graph.generateGeographicGraph(few, 0.5, false, false),
+				Graph.generateGeographicGraph(many, 0.2, false, false),
+				Graph.generateGeographicGraph(lots, 0.08, false, false), };
+
+		for (Graph graph : geoGraphs) {
+			graph.writeToFile(path, "3_Geograph-" + graph.getVertices().size() + fileExt);
+		}
+
+	}
+
+	@Test
+	public void barabasiAlbertFileTest() throws IOException {
+		// Barabasi-Albert graphs
+		Graph[] barabasiGraphs = { Graph.generateBarabasiAlbertGraph(few, 12, false, false),
+				Graph.generateBarabasiAlbertGraph(many, 12, false, false),
+				Graph.generateBarabasiAlbertGraph(lots, 15, false, false), };
+		for (Graph graph : barabasiGraphs) {
+			graph.writeToFile(path, "4_BarabasiAlbert-" + graph.getVertices().size() + fileExt);
+		}
+	}
+
 	@Test
 	public void addVertexTest() {
 		Graph graph = new Graph(false);
@@ -92,61 +155,6 @@ public class Project1Test {
 		double m = 2;
 		Graph graph = Graph.generateBarabasiAlbertGraph(n, m, false, true);
 		System.out.println("Graph: \n" + graph.toString());
-	}
-
-	/* Write to file tests */
-
-	int few = 30; // Few nodes (<50)
-	int many = 100; // Many nodes (<100)
-	int lots = 500; // Lots of nodes
-	String path = "/home/victor/Documents/grafos/ArchivosGenerados_Proyecto1";
-	String fileExt = ".gv";
-
-	@Test
-	public void erdosRenyiFileTest() throws IOException {
-		// Erdos-Renyi
-		Graph[] erdosRenyiGraphs = { Graph.generateErdosRenyiGraph(few, 100, false, false),
-				Graph.generateErdosRenyiGraph(many, 200, false, false),
-				Graph.generateErdosRenyiGraph(lots, 300, false, false), };
-		for (Graph graph : erdosRenyiGraphs) {
-			graph.writeToFile(path, "1_ErdosRenyi-" + graph.getVertices().size() + fileExt);
-		}
-	}
-
-	@Test
-	public void gilbertFileTest() throws IOException {
-		// Gilbert
-		Graph[] gilbertGraphs = { Graph.generateGilbertGraph(few, 0.02, false, false),
-				Graph.generateGilbertGraph(many, 0.02, false, false),
-				Graph.generateGilbertGraph(lots, 0.02, false, false), };
-
-		for (Graph graph : gilbertGraphs) {
-			graph.writeToFile(path, "2_Gilbert-" + graph.getVertices().size() + fileExt);
-		}
-	}
-
-	@Test
-	public void geographicFileTest() throws IOException {
-		// Geographical
-		Graph[] geoGraphs = { Graph.generateGeographicGraph(few, 0.5, false, false),
-				Graph.generateGeographicGraph(many, 0.2, false, false),
-				Graph.generateGeographicGraph(lots, 0.08, false, false), };
-
-		for (Graph graph : geoGraphs) {
-			graph.writeToFile(path, "3_Geograph-" + graph.getVertices().size() + fileExt);
-		}
-
-	}
-
-	@Test
-	public void barabasiAlbertFileTest() throws IOException {
-		// Barabasi-Albert graphs
-		Graph[] barabasiGraphs = { Graph.generateBarabasiAlbertGraph(few, 12, false, false),
-				Graph.generateBarabasiAlbertGraph(many, 12, false, false),
-				Graph.generateBarabasiAlbertGraph(lots, 15, false, false), };
-		for (Graph graph : barabasiGraphs) {
-			graph.writeToFile(path, "4_BarabasiAlbert-" + graph.getVertices().size() + fileExt);
-		}
 	}
 
 }

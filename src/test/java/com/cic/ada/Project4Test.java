@@ -19,6 +19,71 @@ public class Project4Test {
     String fileExt = ".gv";
 
     @Test
+	public void mstTest() throws IOException {
+		erdosRenyiMstTest();
+		gilbertMstTest();
+		geoGraphicMstTest();
+		barabasiAlbertMstTest();
+	}
+
+    @Test
+	public void erdosRenyiMstTest() throws IOException {
+		String type = "1_ErdosRenyi-";
+		Graph[] erdosRenyiGraphs = { Graph.generateErdosRenyiGraph(few, 100, false, false),
+				Graph.generateErdosRenyiGraph(many, 200, false, false),
+				Graph.generateErdosRenyiGraph(lots, 300, false, false), };
+		for (Graph graph : erdosRenyiGraphs) {
+			mst(type, graph);
+		}
+	}
+
+	@Test
+	public void gilbertMstTest() throws IOException {
+		String type = "2_Gilbert-";
+		Graph[] GilbertGraphs = { Graph.generateGilbertGraph(few, 0.02, false, false),
+				Graph.generateGilbertGraph(many, 0.02, false, false),
+				Graph.generateGilbertGraph(lots, 0.02, false, false), };
+
+		for (Graph graph : GilbertGraphs) {
+			mst(type, graph);
+		}
+	}
+
+	@Test
+	public void geoGraphicMstTest() throws IOException {
+		String type = "3_Geograph-";
+
+		Graph[] GeoGraphs = { Graph.generateGeographicGraph(few, 0.5, false, false),
+				Graph.generateGeographicGraph(many, 0.2, false, false),
+				Graph.generateGeographicGraph(lots, 0.08, false, false), };
+
+		for (Graph graph : GeoGraphs) {
+			mst(type, graph);
+		}
+
+	}
+
+	@Test
+	public void barabasiAlbertMstTest() throws IOException {
+		String type = "4_BarabasiAlbert-";
+		Graph[] barabasiGraphs = { Graph.generateBarabasiAlbertGraph(few, 12, false, false),
+				Graph.generateBarabasiAlbertGraph(many, 12, false, false),
+				Graph.generateBarabasiAlbertGraph(lots, 15, false, false), };
+		for (Graph graph : barabasiGraphs) {			
+			mst(type, graph);
+		}
+
+	}
+
+    public void mst (String type, Graph graph) throws IOException {
+        graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
+		graph.Kruskal_D().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_D" + fileExt);
+        graph.Kruskal_I().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_I" + fileExt);
+        graph.Prim().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);
+        
+	}
+
+    @Test
     public void removeEdgeTest(){
         Graph g = new Graph(false);
         Vertex vertex1 = new Vertex("a"), vertex2 = new Vertex("b"), vertex3 = new Vertex("c");
@@ -117,12 +182,6 @@ public class Project4Test {
         mst(type, graph);
         }
 
-    public void mst (String type, Graph graph) throws IOException {
-        graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
-		graph.Kruskal_D().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_D" + fileExt);
-        graph.Kruskal_I().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_I" + fileExt);
-        graph.Prim().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);
-        
-	}
+    
     
 }

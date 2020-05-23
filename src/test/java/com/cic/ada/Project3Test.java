@@ -17,63 +17,6 @@ public class Project3Test {
 	String fileExt = ".gv";
 
 	@Test
-	public void randomEdgesTest() throws IOException {
-		String type = "randomWeights";
-		Graph graph = Graph.generateBarabasiAlbertGraph(30, 12, false, false);
-		graph.randomEdgeValues(0, 20);		
-		graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
-	}
-
-	@Test
-	public void clrsDijkstraExampleTest() throws IOException {
-		Graph g = new Graph(true);
-		String type = "CLRSExample";
-		// Vertices
-		Vertex s = new Vertex("s");
-		Vertex t = new Vertex("t");
-		Vertex x = new Vertex("x");
-		Vertex y = new Vertex("y");
-		Vertex z = new Vertex("z");
-		g.addVertex(s);
-		g.addVertex(t);
-		g.addVertex(x);
-		g.addVertex(y);
-		g.addVertex(z);
-		// Edges
-		//s 
-		Map<String, Object> properties = new HashMap<>();
-		properties.put(Graph.WEIGHT, Float.valueOf(10.0f));
-		g.addEdge(s, t, properties);
-		properties.put(Graph.WEIGHT, Float.valueOf(5.0f));
-		g.addEdge(s, y, properties);
-		//t
-		properties.put(Graph.WEIGHT, Float.valueOf(2.0f));
-		g.addEdge(t, y, properties);
-		properties.put(Graph.WEIGHT, Float.valueOf(1.0f));
-		g.addEdge(t, x, properties);
-		//x
-		properties.put(Graph.WEIGHT, Float.valueOf(10.0f));
-		g.addEdge(x, z, properties);
-		//y 
-		properties.put(Graph.WEIGHT, Float.valueOf(3.0f));
-		g.addEdge(y, t, properties);
-		properties.put(Graph.WEIGHT, Float.valueOf(2.0f));
-		g.addEdge(y, z, properties);
-		properties.put(Graph.WEIGHT, Float.valueOf(9.0f));
-		g.addEdge(y, x, properties);
-		//z
-		properties.put(Graph.WEIGHT, Float.valueOf(6.0f));
-		g.addEdge(z, x, properties);
-		properties.put(Graph.WEIGHT, Float.valueOf(7.0f));
-		g.addEdge(z, s, properties);	
-
-		// Shortest path
-		Graph result = g.dijkstra(s);
-		result.writeToFile(path, type + result.getVertices().size() + fileExt);
-	}
-
-
-	@Test
 	public void shortestPathTest() throws IOException {
 		erdosRenyiShortestPathTest();
 		gilbertShortestPathTest();
@@ -134,6 +77,63 @@ public class Project3Test {
 		graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
 		Vertex source = graph.getVertexNameWithMaxOutDegree();
 		(graph.dijkstra(source)).writeToFile(path, type + graph.getVertices().size() + "-Dijkstra" + fileExt);
+	}
+
+
+	@Test
+	public void randomEdgesTest() throws IOException {
+		String type = "randomWeights";
+		Graph graph = Graph.generateBarabasiAlbertGraph(30, 12, false, false);
+		graph.randomEdgeValues(0, 20);		
+		graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
+	}
+
+	@Test
+	public void clrsDijkstraExampleTest() throws IOException {
+		Graph g = new Graph(true);
+		String type = "CLRSExample";
+		// Vertices
+		Vertex s = new Vertex("s");
+		Vertex t = new Vertex("t");
+		Vertex x = new Vertex("x");
+		Vertex y = new Vertex("y");
+		Vertex z = new Vertex("z");
+		g.addVertex(s);
+		g.addVertex(t);
+		g.addVertex(x);
+		g.addVertex(y);
+		g.addVertex(z);
+		// Edges
+		//s 
+		Map<String, Object> properties = new HashMap<>();
+		properties.put(Graph.WEIGHT, Float.valueOf(10.0f));
+		g.addEdge(s, t, properties);
+		properties.put(Graph.WEIGHT, Float.valueOf(5.0f));
+		g.addEdge(s, y, properties);
+		//t
+		properties.put(Graph.WEIGHT, Float.valueOf(2.0f));
+		g.addEdge(t, y, properties);
+		properties.put(Graph.WEIGHT, Float.valueOf(1.0f));
+		g.addEdge(t, x, properties);
+		//x
+		properties.put(Graph.WEIGHT, Float.valueOf(10.0f));
+		g.addEdge(x, z, properties);
+		//y 
+		properties.put(Graph.WEIGHT, Float.valueOf(3.0f));
+		g.addEdge(y, t, properties);
+		properties.put(Graph.WEIGHT, Float.valueOf(2.0f));
+		g.addEdge(y, z, properties);
+		properties.put(Graph.WEIGHT, Float.valueOf(9.0f));
+		g.addEdge(y, x, properties);
+		//z
+		properties.put(Graph.WEIGHT, Float.valueOf(6.0f));
+		g.addEdge(z, x, properties);
+		properties.put(Graph.WEIGHT, Float.valueOf(7.0f));
+		g.addEdge(z, s, properties);	
+
+		// Shortest path
+		Graph result = g.dijkstra(s);
+		result.writeToFile(path, type + result.getVertices().size() + fileExt);
 	}
 
 }
