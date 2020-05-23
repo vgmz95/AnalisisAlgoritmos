@@ -112,7 +112,7 @@ public class Graph {
 			return adjList.stream().anyMatch(edge -> edge.getNode2().equals(vertex2));
 	}
 
-	public int VertexDegree(Vertex vertex) {
+	public int vertexDegree(Vertex vertex) {
 		return edges.get(vertex.getName()).size();
 	}
 
@@ -224,7 +224,7 @@ public class Graph {
 			Vertex vertex1 = graph.getVertices().get(arrayInt.get(i) + "");
 			for (int j = 0; j < i; j++) {
 				Vertex vertex2 = graph.getVertices().get(arrayInt.get(j) + "");
-				int nodeDegree = graph.VertexDegree(vertex2);
+				int nodeDegree = graph.vertexDegree(vertex2);
 				double random = ThreadLocalRandom.current().nextDouble();
 				double p = 1 - (double) (nodeDegree / d);
 				if (random <= p) {
@@ -259,10 +259,12 @@ public class Graph {
 					v.setProperty(DISCOVERED, Boolean.TRUE);
 					v.setProperty(DISTANCE, Integer.valueOf((Integer) u.getProperty(DISTANCE) + 1));
 					q.add(v);
-					g.addEdge(u, v);
+					g.addEdge(u, v, edge.getProperties());
 				}
 			});
 		}
+		// Add vertices to the graph map that were not discovered
+		vertices.values().forEach(vertex -> g.getVertices().putIfAbsent(vertex.getName(), vertex));
 
 		return g;
 	}
@@ -273,6 +275,9 @@ public class Graph {
 			vertex.setProperty(VISITED, Boolean.FALSE);
 		});
 		DFS_R_Helper(s, g);
+
+		// Add vertices to the graph map that were not discovered
+		vertices.values().forEach(vertex -> g.getVertices().putIfAbsent(vertex.getName(), vertex));
 		return g;
 	}
 
@@ -283,7 +288,7 @@ public class Graph {
 			Vertex v = edge.getNode2();
 			boolean visited = ((Boolean) v.getProperty(VISITED)).booleanValue();
 			if (!visited) {
-				g.addEdge(u, v);
+				g.addEdge(u, v, edge.getProperties());
 				DFS_R_Helper(v, g);
 			}
 		});
@@ -307,11 +312,13 @@ public class Graph {
 				boolean visited = ((Boolean) v.getProperty(VISITED)).booleanValue();
 				if (!visited) {
 					v.setProperty(VISITED, Boolean.TRUE);
-					g.addEdge(u, v);
+					g.addEdge(u, v, edge.getProperties());
 					stack.push(v);
 				}
 			});
 		}
+		// Add vertices to the graph map that were not discovered
+		vertices.values().forEach(vertex -> g.getVertices().putIfAbsent(vertex.getName(), vertex));
 		return g;
 	}
 
@@ -342,13 +349,7 @@ public class Graph {
 		initializeSingleSource(vertices, source);
 		Set<Vertex> s = new HashSet<>();
 		// Priority queue keyed by distance
-		Queue<Vertex> q = new PriorityQueue<>(vertices.size(), (first, second) -> {
-			if ((Float) first.getProperty(DISTANCE) > (Float) second.getProperty(DISTANCE))
-				return 1;
-			else if ((Float) first.getProperty(DISTANCE) < (Float) second.getProperty(DISTANCE))
-				return -1;
-			return 0;
-		});
+		Queue<Vertex> q = new PriorityQueue<>(vertices.size(), new VertexDistanceComparator());
 		q.addAll(vertices.values());
 
 		while (!q.isEmpty()) {
@@ -364,6 +365,11 @@ public class Graph {
 
 		// New graph reconstruction
 		Graph g = new Graph(directed);
+		reconstructDijkstra(s, g, true);
+		return g;
+	}
+
+	private void reconstructDijkstra(Set<Vertex> s, Graph g, boolean formatNodes) {
 		// Add vertices and edges
 		for (Vertex vertex : s) {
 			// Skip if source
@@ -372,8 +378,8 @@ public class Graph {
 
 			Vertex node1 = vertices.get((String) vertex.getProperty(PARENT));
 			Vertex node2 = vertex;
-			String node1Id = generateVertexIdDijkstra(node1);
-			String node2Id = generateVertexIdDijkstra(node2);
+			String node1Id = (formatNodes ? generateVertexIdDijkstra(node1) : node1.getName());
+			String node2Id = (formatNodes ? generateVertexIdDijkstra(node2) : node2.getName());
 
 			Vertex auxNode1 = new Vertex(node1Id, node1.getProperties());
 			Vertex auxNode2 = new Vertex(node2Id, node2.getProperties());
@@ -387,8 +393,6 @@ public class Graph {
 			}
 			g.addEdge(auxNode1, auxNode2, vertexData);
 		}
-
-		return g;
 	}
 
 	private void initializeSingleSource(Map<String, Vertex> vertices, Vertex source) {
@@ -448,10 +452,11 @@ public class Graph {
 				union(uSet, vSet);
 			}
 		}
-		System.out.println("MST Prim cost: " + mstCost);
+		System.out.println("MST Kruskal_D cost: " + mstCost);
 		return a;
 	}
 
+	// <union-find alg.>
 	private void union(String uSet, String vSet) {
 		this.vertices.get(uSet).setProperty(PARENT, vSet);
 	}
@@ -467,6 +472,90 @@ public class Graph {
 		else
 			return findSet(this.vertices.get(parent));
 	}
+	// </union-find alg.>
+
+	public Graph Kruskal_I() {
+		// Result
+		Graph a = new Graph(this.directed);
+		a.setVertices(this.getVertices());
+		a.setEdges(this.getEdges());
+		float mstCost = 0.0f;
+		// Sort all edges
+		List<Edge> allEdges = new ArrayList<>();
+		a.getEdges().values().forEach(edges -> allEdges.addAll(edges));
+		Collections.sort(allEdges, Collections.reverseOrder(new EdgeWeightComparator()));
+		// We need to keep track of reversed edges when graph is undirected
+		Set<String> seenEdges = new HashSet<>();
+		// Iterate
+		for (Edge edge : allEdges) {
+			Vertex u = edge.getNode1(), v = edge.getNode2();
+			if (!alreadySeen(seenEdges, edge)) {
+				a.deleteEdge(u, v);
+				if (!a.isConnected()) {
+					a.addEdge(u, v, edge.getProperties());
+					mstCost += (Float) edge.getProperty(WEIGHT);
+					seenEdges.add(edge.getId());
+				}
+			}
+		}
+		System.out.println("MST Kruskal_I cost: " + mstCost);
+		return a;
+	}
+
+	public boolean isConnected() {
+		Graph dfs = this.DFS_I(this.getVertexNameWithMaxOutDegree());
+		if (dfs.getEdges().size() == 0)
+			return false;
+		return dfs.getVertices().values().stream().allMatch(v -> ((Boolean) v.getProperty(VISITED)).booleanValue());
+	}
+
+	public void deleteEdge(Vertex u, Vertex v) {
+		List<Edge> adjList = this.edges.get(u.getName());
+		adjList.removeIf(edge -> edge.getNode2().getName().equals(v.getName()));
+		if (!this.directed) { // delete reverse vertex
+			adjList = this.edges.get(v.getName());
+			adjList.removeIf(edge -> edge.getNode2().getName().equals(u.getName()));
+		}
+	}
+
+	private boolean alreadySeen(Set<String> alreadySeenEdges, Edge edge) {
+		return alreadySeenEdges.contains(this.generateEdgeId(edge.getNode2(), edge.getNode1()));
+	}
+
+	public Graph Prim() {
+		// *** based on dijkstra implementation *** //
+		Vertex source = this.getVertexNameWithMaxOutDegree();
+		float mstCost = 0.0f;
+		initializeSingleSource(vertices, source);
+		Set<Vertex> s = new HashSet<>();
+		// Priority queue keyed by distance
+		Queue<Vertex> q = new PriorityQueue<>(vertices.size(), new VertexDistanceComparator());
+		q.addAll(vertices.values());
+
+		while (!q.isEmpty()) {
+			Vertex u = q.poll();
+			s.add(u);
+			List<Edge> adjList = edges.get(u.getName());
+			for (Edge e : adjList) {
+				Vertex v = e.getNode2();
+				Float weight = (Float) e.getProperty(WEIGHT);
+				// relax function is different
+				if ((Float) v.getProperty(DISTANCE) > weight && !s.contains(v)) {
+					v.setProperty(DISTANCE, weight);
+					mstCost += weight;
+					v.setProperty(PARENT, u.getName());
+					q.offer(v);
+				}
+			}
+		}
+
+		System.out.println("MST Prim cost: " + mstCost);
+
+		// New graph reconstruction
+		Graph g = new Graph(directed);
+		reconstructDijkstra(s, g, false);
+		return g;
+	}
 
 	// To file
 	public void writeToFile(String path, String filename) throws IOException {
@@ -478,7 +567,7 @@ public class Graph {
 		return vertices;
 	}
 
-	public void setVertices(HashMap<String, Vertex> vertices) {
+	public void setVertices(Map<String, Vertex> vertices) {
 		this.vertices = vertices;
 	}
 
@@ -486,7 +575,7 @@ public class Graph {
 		return edges;
 	}
 
-	public void setEdges(HashMap<String, List<Edge>> edges) {
+	public void setEdges(Map<String, List<Edge>> edges) {
 		this.edges = edges;
 	}
 
@@ -541,12 +630,23 @@ public class Graph {
 		return str.toString();
 	}
 
-	public class EdgeWeightComparator implements Comparator<Edge> {
+	private class EdgeWeightComparator implements Comparator<Edge> {
 		@Override
 		public int compare(Edge first, Edge second) {
 			if ((Float) first.getProperty(WEIGHT) > (Float) second.getProperty(WEIGHT))
 				return 1;
 			else if ((Float) first.getProperty(WEIGHT) < (Float) second.getProperty(WEIGHT))
+				return -1;
+			return 0;
+		}
+	}
+
+	private class VertexDistanceComparator implements Comparator<Vertex> {
+		@Override
+		public int compare(Vertex first, Vertex second) {
+			if ((Float) first.getProperty(DISTANCE) > (Float) second.getProperty(DISTANCE))
+				return 1;
+			else if ((Float) first.getProperty(DISTANCE) < (Float) second.getProperty(DISTANCE))
 				return -1;
 			return 0;
 		}

@@ -95,4 +95,11 @@ public class Edge {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder strProperties = new StringBuilder();
+		properties.forEach((key, value) -> strProperties.append(key + ":" + value + "\n"));
+		return "Edge [" + id + ", properties=" + strProperties.toString() + "]";
+	}
+
 }

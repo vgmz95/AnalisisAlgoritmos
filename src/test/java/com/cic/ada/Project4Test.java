@@ -7,6 +7,7 @@ import java.util.Map;
 import com.cic.ada.Grafo.Graph;
 import com.cic.ada.Grafo.Vertex;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class Project4Test {
@@ -16,6 +17,27 @@ public class Project4Test {
     float min = 1.0f, max = 50.0f;
     String path = "/home/victor/Documents/grafos/ArchivosGenerados_Proyecto4";
     String fileExt = ".gv";
+
+    @Test
+    public void removeEdgeTest(){
+        Graph g = new Graph(false);
+        Vertex vertex1 = new Vertex("a"), vertex2 = new Vertex("b"), vertex3 = new Vertex("c");
+        g.addEdge(vertex1, vertex2);
+        g.addEdge(vertex1, vertex3);
+        g.deleteEdge(vertex1, vertex2);
+        Assert.assertFalse(g.existEdge(vertex1, vertex2));
+    }
+
+    @Test
+    public void conectivityTest(){
+        Graph g = new Graph(false);
+        Vertex vertex1 = new Vertex("a"), vertex2 = new Vertex("b"), vertex3 = new Vertex("c");
+        g.addEdge(vertex1, vertex2);
+        g.addEdge(vertex1, vertex3);
+        Assert.assertTrue(g.isConnected());
+        g.deleteEdge(vertex1, vertex2);
+        Assert.assertFalse(g.isConnected());
+    }
 
     // CLRS pag 632
     @Test
@@ -92,10 +114,15 @@ public class Project4Test {
         properties.put(Graph.WEIGHT, Float.valueOf(7.0f));
         graph.addEdge(h, i, properties);
         
+        mst(type, graph);
+        }
 
-        Graph result = graph.Kruskal_D();
-        graph.writeToFile(path, type + result.getVertices().size() + fileExt);
-        result.writeToFile(path, type + "Kruskal_D" + result.getVertices().size() + fileExt);
-    }
+    public void mst (String type, Graph graph) throws IOException {
+        graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
+		graph.Kruskal_D().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_D" + fileExt);
+        graph.Kruskal_I().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_I" + fileExt);
+        graph.Prim().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);
+	
+	}
     
 }

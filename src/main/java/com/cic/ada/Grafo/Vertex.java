@@ -62,4 +62,11 @@ public class Vertex {
 		return properties;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder strProperties = new StringBuilder();
+		properties.forEach((key, value) -> strProperties.append(key + ":" + value + "\n"));
+		return "Vertex [name=" + name + ", properties=" + strProperties.toString() + "]";
+	}
+
 }
