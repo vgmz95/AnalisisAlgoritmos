@@ -13,7 +13,7 @@ public class Project2Test {
 	int lots = 500; // Lots of nodes
 	String path = "/home/victor/Documents/grafos/ArchivosGenerados_Proyecto2";
 	String fileExt = ".gv";
-	
+
 	@Test
 	public void traversalTest() throws IOException {
 		erdosRenyiTraversalTest();
@@ -65,7 +65,7 @@ public class Project2Test {
 		Graph[] barabasiGraphs = { Graph.generateBarabasiAlbertGraph(few, 12, false, false),
 				Graph.generateBarabasiAlbertGraph(many, 12, false, false),
 				Graph.generateBarabasiAlbertGraph(lots, 15, false, false), };
-		for (Graph graph : barabasiGraphs) {			
+		for (Graph graph : barabasiGraphs) {
 			traversal(type, graph);
 		}
 
@@ -82,13 +82,13 @@ public class Project2Test {
 	@Test
 	public void traversalClrsTest() throws IOException {
 		bfsClrsTest();
-		dfsClrsTest();		
+		dfsClrsTest();
 	}
 
 	@Test
 	public void bfsClrsTest() throws IOException {
 		Graph graph = new Graph(false);
-		Vertex r,s,t,u,v,w,x,y;
+		Vertex r, s, t, u, v, w, x, y;
 		String type = "BFS-CLRS-";
 		r = new Vertex("r");
 		s = new Vertex("s");
@@ -109,30 +109,29 @@ public class Project2Test {
 		graph.addEdge(x, y);
 		graph.addEdge(y, u);
 		Graph bfs = graph.BFS(s);
-		bfs.writeToFile(path, type + graph.getVertices().size() + fileExt);	
+		bfs.writeToFile(path, type + graph.getVertices().size() + fileExt);
 	}
 
 	@Test
 	public void dfsClrsTest() throws IOException {
 		Graph graph = new Graph(true);
-		Vertex u,v,w,x,y,z;
-		String type = "DFSR-CLRS-";	
+		Vertex u, v, w, x, y, z;
+		String type = "DFSR-CLRS-";
 		u = new Vertex("u");
 		v = new Vertex("v");
 		w = new Vertex("w");
 		x = new Vertex("x");
 		y = new Vertex("y");
 		z = new Vertex("z");
-		graph.addEdge(u,v);
-		graph.addEdge(u,x);
-		graph.addEdge(x,v);
-		graph.addEdge(v,y);
-		graph.addEdge(w,y);
-		graph.addEdge(w,z);
-		graph.addEdge(z,z);	
+		graph.addEdge(u, v);
+		graph.addEdge(u, x);
+		graph.addEdge(x, v);
+		graph.addEdge(v, y);
+		graph.addEdge(w, y);
+		graph.addEdge(w, z);
+		graph.addEdge(z, z);
 		Graph bfs = graph.DFS_R(u);
-		bfs.writeToFile(path, type + graph.getVertices().size() + fileExt);	
+		bfs.writeToFile(path, type + graph.getVertices().size() + fileExt);
 	}
-
 
 }

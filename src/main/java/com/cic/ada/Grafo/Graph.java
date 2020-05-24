@@ -452,7 +452,7 @@ public class Graph {
 				union(uSet, vSet);
 			}
 		}
-		System.out.println("MST Kruskal_D cost: " + mstCost);
+		System.out.printf("MST Kruskal_D cost: %.2f\n", mstCost);
 		return a;
 	}
 
@@ -498,7 +498,8 @@ public class Graph {
 				}
 			}
 		}
-		System.out.println("MST Kruskal_I cost: " + mstCost);
+		
+		System.out.printf("MST Kruskal_I cost: %.2f\n", mstCost);
 		return a;
 	}
 
@@ -549,8 +550,8 @@ public class Graph {
 			}
 		}
 
-		System.out.println("MST Prim cost: " + mstCost);
-
+		System.out.printf("MST Prim      cost: %.2f\n", mstCost);
+		
 		// New graph reconstruction
 		Graph g = new Graph(directed);
 		reconstructDijkstra(s, g, false);

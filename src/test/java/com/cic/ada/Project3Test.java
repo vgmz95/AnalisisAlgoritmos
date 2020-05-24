@@ -30,7 +30,7 @@ public class Project3Test {
 		Graph[] erdosRenyiGraphs = { Graph.generateErdosRenyiGraph(few, 100, false, false),
 				Graph.generateErdosRenyiGraph(many, 200, false, false),
 				Graph.generateErdosRenyiGraph(lots, 300, false, false), };
-		for (Graph graph : erdosRenyiGraphs) {			
+		for (Graph graph : erdosRenyiGraphs) {
 			shortestPath(type, graph);
 		}
 	}
@@ -41,7 +41,7 @@ public class Project3Test {
 		Graph[] gilbertGraphs = { Graph.generateGilbertGraph(few, 0.02, false, false),
 				Graph.generateGilbertGraph(many, 0.02, false, false),
 				Graph.generateGilbertGraph(lots, 0.02, false, false), };
-		for (Graph graph : gilbertGraphs) {		
+		for (Graph graph : gilbertGraphs) {
 			shortestPath(type, graph);
 		}
 	}
@@ -54,7 +54,7 @@ public class Project3Test {
 				Graph.generateGeographicGraph(many, 0.2, false, false),
 				Graph.generateGeographicGraph(lots, 0.08, false, false), };
 
-		for (Graph graph : geoGraphs) {			
+		for (Graph graph : geoGraphs) {
 			shortestPath(type, graph);
 		}
 
@@ -72,19 +72,18 @@ public class Project3Test {
 
 	}
 
-	public void shortestPath (String type, Graph graph) throws IOException {
+	public void shortestPath(String type, Graph graph) throws IOException {
 		graph.randomEdgeValues(min, max);
 		graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
 		Vertex source = graph.getVertexNameWithMaxOutDegree();
 		(graph.dijkstra(source)).writeToFile(path, type + graph.getVertices().size() + "-Dijkstra" + fileExt);
 	}
 
-
 	@Test
 	public void randomEdgesTest() throws IOException {
 		String type = "randomWeights";
 		Graph graph = Graph.generateBarabasiAlbertGraph(30, 12, false, false);
-		graph.randomEdgeValues(0, 20);		
+		graph.randomEdgeValues(0, 20);
 		graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
 	}
 
@@ -104,32 +103,32 @@ public class Project3Test {
 		g.addVertex(y);
 		g.addVertex(z);
 		// Edges
-		//s 
+		// s
 		Map<String, Object> properties = new HashMap<>();
 		properties.put(Graph.WEIGHT, Float.valueOf(10.0f));
 		g.addEdge(s, t, properties);
 		properties.put(Graph.WEIGHT, Float.valueOf(5.0f));
 		g.addEdge(s, y, properties);
-		//t
+		// t
 		properties.put(Graph.WEIGHT, Float.valueOf(2.0f));
 		g.addEdge(t, y, properties);
 		properties.put(Graph.WEIGHT, Float.valueOf(1.0f));
 		g.addEdge(t, x, properties);
-		//x
+		// x
 		properties.put(Graph.WEIGHT, Float.valueOf(10.0f));
 		g.addEdge(x, z, properties);
-		//y 
+		// y
 		properties.put(Graph.WEIGHT, Float.valueOf(3.0f));
 		g.addEdge(y, t, properties);
 		properties.put(Graph.WEIGHT, Float.valueOf(2.0f));
 		g.addEdge(y, z, properties);
 		properties.put(Graph.WEIGHT, Float.valueOf(9.0f));
 		g.addEdge(y, x, properties);
-		//z
+		// z
 		properties.put(Graph.WEIGHT, Float.valueOf(6.0f));
 		g.addEdge(z, x, properties);
 		properties.put(Graph.WEIGHT, Float.valueOf(7.0f));
-		g.addEdge(z, s, properties);	
+		g.addEdge(z, s, properties);
 
 		// Shortest path
 		Graph result = g.dijkstra(s);
