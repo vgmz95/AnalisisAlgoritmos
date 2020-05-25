@@ -394,9 +394,9 @@ public class Graph {
 	}
 
 	private void initializeSingleSource(Map<String, Vertex> vertices, Vertex source) {
-		for (Entry<String, Vertex> vertexEntry : vertices.entrySet()) {
-			vertexEntry.getValue().setProperty(DISTANCE, Float.POSITIVE_INFINITY);
-			vertexEntry.getValue().setProperty(PARENT, NIL);
+		for (Vertex vertex : vertices.values()) {
+			vertex.setProperty(DISTANCE, Float.POSITIVE_INFINITY);
+			vertex.setProperty(PARENT, NIL);
 		}
 		source.setProperty(DISTANCE, Float.valueOf(0.0f));
 	}
@@ -450,6 +450,7 @@ public class Graph {
 				union(uSet, vSet);
 			}
 		}
+		clearSet();
 		System.out.printf("MST Kruskal_D cost: %.2f\n", mstCost);
 		return a;
 	}
@@ -470,17 +471,19 @@ public class Graph {
 		else
 			return findSet(this.vertices.get(parent));
 	}
+
+	private void clearSet() {
+		this.vertices.values().stream().forEach(v->v.getProperties().remove(PARENT));
+	}
 	// </union-find alg.>
 
 	public Graph Kruskal_I() {
 		// Result
-		Graph a = new Graph(this.directed);
-		a.setVertices(this.getVertices());
-		a.setEdges(this.getEdges());
+		Graph a = new Graph(this.getVertices(), this.getEdges(), this.isDirected());
 		float mstCost = 0.0f;
 		// Sort all edges
 		List<Edge> allEdges = new ArrayList<>();
-		a.getEdges().values().forEach(edges -> allEdges.addAll(edges));
+		a.getEdges().values().forEach(e -> allEdges.addAll(e));
 		Collections.sort(allEdges, Collections.reverseOrder(new EdgeWeightComparator()));
 		// We need to keep track of reversed edges when graph is undirected
 		Set<String> seenEdges = new HashSet<>();
@@ -510,40 +513,43 @@ public class Graph {
 
 	public void deleteEdge(Vertex u, Vertex v) {
 		List<Edge> adjList = this.edges.get(u.getName());
-		adjList.removeIf(edge -> edge.getNode2().getName().equals(v.getName()));
+		adjList.removeIf(edge -> edge.getId().equals(generateEdgeId(u, v)));
 		if (!this.directed) { // delete reverse vertex
 			adjList = this.edges.get(v.getName());
-			adjList.removeIf(edge -> edge.getNode2().getName().equals(u.getName()));
+			adjList.removeIf(edge -> edge.getId().equals(generateEdgeId(v, u)));
 		}
 	}
 
 	private boolean alreadySeen(Set<String> alreadySeenEdges, Edge edge) {
-		return alreadySeenEdges.contains(this.generateEdgeId(edge.getNode2(), edge.getNode1()));
+		return alreadySeenEdges.contains(generateEdgeId(edge.getNode2(), edge.getNode1()));
 	}
 
 	public Graph Prim() {
-		// *** based on dijkstra implementation *** //
-		Vertex source = this.getVertexNameWithMaxOutDegree();
+		// *** based on dijkstra implementation *** //		
+		Vertex source = getVertexNameWithMaxOutDegree();
 		float mstCost = 0.0f;
 		initializeSingleSource(vertices, source);
-		Set<Vertex> s = new HashSet<>();
+
 		// Priority queue keyed by distance
 		Queue<Vertex> q = new PriorityQueue<>(vertices.size(), new VertexDistanceComparator());
-		q.addAll(vertices.values());
+		Set<Vertex>  inMST = new HashSet<>(vertices.size());
+		q.add(source);	
 
 		while (!q.isEmpty()) {
 			Vertex u = q.poll();
-			s.add(u);
+			inMST.add(u);
 			List<Edge> adjList = edges.get(u.getName());
 			for (Edge e : adjList) {
 				Vertex v = e.getNode2();
-				Float weight = (Float) e.getProperty(WEIGHT);
-				// relax function is different
-				if ((Float) v.getProperty(DISTANCE) > weight && !s.contains(v)) {
+				Float weight = (Float) e.getProperty(WEIGHT);				
+				if (!inMST.contains(v) && weight < (Float) v.getProperty(DISTANCE)) {
+					//Update key of V
 					v.setProperty(DISTANCE, weight);
-					mstCost += weight;
-					v.setProperty(PARENT, u.getName());
+					//Insert into pq
 					q.offer(v);
+					// Assing parent
+					v.setProperty(PARENT, u.getName());	
+					mstCost += weight;										
 				}
 			}
 		}
@@ -551,7 +557,7 @@ public class Graph {
 		System.out.printf("MST Prim      cost: %.2f\n", mstCost);
 		// New graph reconstruction
 		Graph g = new Graph(directed);
-		reconstructDijkstra(s, g, false);
+		reconstructDijkstra(inMST, g, false);
 		return g;
 	}
 

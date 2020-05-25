@@ -83,14 +83,13 @@ public class Project4Test {
 
     }
 
-    public void mst(String type, Graph graph) throws IOException {        
+    public void mst(String type, Graph graph) throws IOException {
         Graph connected = getAConnectedComponent(graph);
         System.out.println(type + graph.getVertices().size());
         connected.writeToFile(path, type + graph.getVertices().size() + fileExt);
-        connected.Kruskal_D().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_D" + fileExt);        
-        connected.Kruskal_I().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_I" + fileExt);
         connected.Prim().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);
-                
+        connected.Kruskal_D().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_D" + fileExt);
+        connected.Kruskal_I().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_I" + fileExt);
         System.out.println("_________________________________");
     }
 
