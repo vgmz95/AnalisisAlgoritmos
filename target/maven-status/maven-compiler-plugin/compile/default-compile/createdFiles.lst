@@ -1,3 +1,6 @@
-com\cic\ada\Grafo\Graph.class
-com\cic\ada\Grafo\Edge.class
-com\cic\ada\Grafo\Vertex.class
+com/cic/ada/Grafo/Graph$VertexDistanceComparator.class
+com/cic/ada/Grafo/Graph$1.class
+com/cic/ada/Grafo/Graph$EdgeWeightComparator.class
+com/cic/ada/Grafo/Vertex.class
+com/cic/ada/Grafo/Graph.class
+com/cic/ada/Grafo/Edge.class

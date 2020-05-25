@@ -29,7 +29,7 @@ public class Graph {
 
 	private static final String DISTANCE = "distance";
 	private static final String DISCOVERED = "discovered";
-	private static final String VISITED = "visited";
+	public static final String VISITED = "visited";
 	public static final String WEIGHT = "weight";
 	private static final String NIL = "nil";
 	private static final String PARENT = "parent";
@@ -45,9 +45,9 @@ public class Graph {
 		this.directed = directed;
 	}
 
-	public Graph(HashMap<String, Vertex> vertices, HashMap<String, List<Edge>> edges, boolean directed) {
-		this.vertices = vertices;
-		this.edges = edges;
+	public Graph(Map<String, Vertex> vertices, Map<String, List<Edge>> edges, boolean directed) {
+		this.vertices = new HashMap<>(vertices);
+		this.edges = new HashMap<>(edges);
 		this.directed = directed;
 	}
 
@@ -188,7 +188,7 @@ public class Graph {
 					// Calculate distance
 					Double x_1 = (Double) vertex1.getProperty("x"), y_1 = (Double) vertex1.getProperty("y");
 					Double x_2 = (Double) vertex2.getProperty("x"), y_2 = (Double) vertex2.getProperty("y");
-					Double x_diff = Math.pow(x_2 - x_1, 2.0), y_diff = Math.pow(y_2 - y_1, 2.0);
+					Double x_diff = Math.pow(x_2 - x_1, 2.0d), y_diff = Math.pow(y_2 - y_1, 2.0d);
 					Double distance = Math.sqrt(x_diff + y_diff);
 					if (distance <= r) { // Create vertex if distance <= radius
 						graph.addEdge(vertex1, vertex2);
@@ -297,9 +297,7 @@ public class Graph {
 	public Graph DFS_I(Vertex s) {
 		Graph g = new Graph(false);
 		Stack<Vertex> stack = new Stack<>();
-		vertices.values().forEach(vertex -> {
-			vertex.setProperty(VISITED, Boolean.FALSE);
-		});
+		vertices.values().forEach(vertex -> vertex.setProperty(VISITED, Boolean.FALSE));
 
 		stack.push(s);
 		s.setProperty(VISITED, Boolean.TRUE);
@@ -498,7 +496,7 @@ public class Graph {
 				}
 			}
 		}
-		
+
 		System.out.printf("MST Kruskal_I cost: %.2f\n", mstCost);
 		return a;
 	}
@@ -551,7 +549,6 @@ public class Graph {
 		}
 
 		System.out.printf("MST Prim      cost: %.2f\n", mstCost);
-		
 		// New graph reconstruction
 		Graph g = new Graph(directed);
 		reconstructDijkstra(s, g, false);
@@ -634,22 +631,16 @@ public class Graph {
 	private class EdgeWeightComparator implements Comparator<Edge> {
 		@Override
 		public int compare(Edge first, Edge second) {
-			if ((Float) first.getProperty(WEIGHT) > (Float) second.getProperty(WEIGHT))
-				return 1;
-			else if ((Float) first.getProperty(WEIGHT) < (Float) second.getProperty(WEIGHT))
-				return -1;
-			return 0;
+			Float firstF = (Float) first.getProperty(WEIGHT), secondF = (Float) second.getProperty(WEIGHT);
+			return Float.compare(firstF, secondF);
 		}
 	}
 
 	private class VertexDistanceComparator implements Comparator<Vertex> {
 		@Override
 		public int compare(Vertex first, Vertex second) {
-			if ((Float) first.getProperty(DISTANCE) > (Float) second.getProperty(DISTANCE))
-				return 1;
-			else if ((Float) first.getProperty(DISTANCE) < (Float) second.getProperty(DISTANCE))
-				return -1;
-			return 0;
+			Float firstF = (Float) first.getProperty(DISTANCE), secondF = (Float) second.getProperty(DISTANCE);
+			return Float.compare(firstF, secondF);
 		}
 	}
 

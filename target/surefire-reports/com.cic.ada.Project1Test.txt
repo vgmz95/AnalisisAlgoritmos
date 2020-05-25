@@ -1,11 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.cic.ada.Project1Test
 -------------------------------------------------------------------------------
-Tests run: 11, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 4.286 s <<< FAILURE! - in com.cic.ada.Project1Test
-CheckIfVertexExist(com.cic.ada.Project1Test)  Time elapsed: 0 s  <<< ERROR!
-java.lang.NullPointerException
-	at com.cic.ada.Project1Test.CheckIfVertexExist(Project1Test.java:46)
-
-AddEdge(com.cic.ada.Project1Test)  Time elapsed: 0 s  <<< ERROR!
-java.lang.NullPointerException
-
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.274 s - in com.cic.ada.Project1Test

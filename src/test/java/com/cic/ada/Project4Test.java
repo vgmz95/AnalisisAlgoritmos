@@ -2,8 +2,12 @@ package com.cic.ada;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import com.cic.ada.Grafo.Edge;
 import com.cic.ada.Grafo.Graph;
 import com.cic.ada.Grafo.Vertex;
 
@@ -14,7 +18,7 @@ public class Project4Test {
     int few = 30; // Few nodes (<50)
     int many = 100; // Many nodes (<100)
     int lots = 500; // Lots of nodes
-    float min = 1.0f, max = 50.0f;
+    float min = 1.0f, max = 100.0f;
     String path = "/home/victor/Documents/grafos/ArchivosGenerados_Proyecto4";
     String fileExt = ".gv";
 
@@ -33,6 +37,7 @@ public class Project4Test {
                 Graph.generateErdosRenyiGraph(many, 200, false, false),
                 Graph.generateErdosRenyiGraph(lots, 300, false, false), };
         for (Graph graph : erdosRenyiGraphs) {
+            graph.randomEdgeValues(min, max);
             mst(type, graph);
         }
     }
@@ -45,6 +50,7 @@ public class Project4Test {
                 Graph.generateGilbertGraph(lots, 0.02, false, false), };
 
         for (Graph graph : GilbertGraphs) {
+            graph.randomEdgeValues(min, max);
             mst(type, graph);
         }
     }
@@ -58,6 +64,7 @@ public class Project4Test {
                 Graph.generateGeographicGraph(lots, 0.08, false, false), };
 
         for (Graph graph : GeoGraphs) {
+            graph.randomEdgeValues(min, max);
             mst(type, graph);
         }
 
@@ -70,20 +77,36 @@ public class Project4Test {
                 Graph.generateBarabasiAlbertGraph(many, 12, false, false),
                 Graph.generateBarabasiAlbertGraph(lots, 15, false, false), };
         for (Graph graph : barabasiGraphs) {
+            graph.randomEdgeValues(min, max);
             mst(type, graph);
         }
 
     }
 
-    public void mst(String type, Graph graph) throws IOException {
-        graph.randomEdgeValues(min, max);
+    public void mst(String type, Graph graph) throws IOException {        
+        Graph connected = getAConnectedComponent(graph);
         System.out.println(type + graph.getVertices().size());
-        graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
-        graph.Kruskal_D().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_D" + fileExt);
-        graph.Kruskal_I().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_I" + fileExt);
-        graph.Prim().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);
+        connected.writeToFile(path, type + graph.getVertices().size() + fileExt);
+        connected.Kruskal_D().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_D" + fileExt);        
+        connected.Kruskal_I().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_I" + fileExt);
+        connected.Prim().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);
+                
         System.out.println("_________________________________");
+    }
 
+    public Graph getAConnectedComponent(Graph original) {
+        Graph dfs = original.DFS_I(original.getVertexNameWithMaxOutDegree());
+        // Get nodes visited by DFS
+        Map<String, Vertex> visitedVertices = dfs.getVertices().entrySet().stream()
+                .filter(entry -> (Boolean) entry.getValue().getProperty(Graph.VISITED))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
+        // Get edges associated with these nodes
+        Map<String, List<Edge>> conectedEdges = original.getEdges().entrySet().stream()
+                .filter(entry -> visitedVertices.containsKey(entry.getKey()))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
+        return new Graph(visitedVertices, conectedEdges, original.isDirected());
     }
 
     @Test
