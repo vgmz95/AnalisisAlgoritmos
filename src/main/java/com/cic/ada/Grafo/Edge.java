@@ -2,6 +2,7 @@ package com.cic.ada.Grafo;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Edge {
 	private String id;
@@ -22,8 +23,24 @@ public class Edge {
 		this.properties = new HashMap<String, Object>();
 	}
 
+	public Edge(Edge edge) {
+		this.id = edge.getId();
+		this.node1 = new Vertex(edge.getNode1());
+		this.node2 = new Vertex(edge.getNode2());
+		this.properties = edge.getProperties().entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+	}
+
 	public String getId() {
 		return id;
+	}
+
+	public String getNode1Name(){
+		return node1.getName();
+	}
+
+	public String getNode2Name(){
+		return node2.getName();
 	}
 
 	public void setId(String id) {

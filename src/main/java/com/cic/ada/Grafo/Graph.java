@@ -16,6 +16,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -23,9 +24,9 @@ import java.util.stream.IntStream;
 
 public class Graph {
 
-	private Map<String, Vertex> vertices;
-	private Map<String, List<Edge>> edges;
-	private boolean directed;
+	private final Map<String, Vertex> vertices;
+	private final Map<String, List<Edge>> edges;
+	private final boolean directed;
 
 	private static final String DISTANCE = "distance";
 	private static final String DISCOVERED = "discovered";
@@ -34,20 +35,35 @@ public class Graph {
 	private static final String NIL = "nil";
 	private static final String PARENT = "parent";
 
-	public Graph() {
-		this.vertices = new HashMap<>();
-		this.edges = new HashMap<>();
-	}
-
 	public Graph(boolean directed) {
 		this.vertices = new HashMap<>();
 		this.edges = new HashMap<>();
 		this.directed = directed;
 	}
 
+	// Copy constructor
+	public Graph(Graph graph) {
+		this(graph.getVertices(), graph.getEdges(), graph.isDirected());
+	}
+
 	public Graph(Map<String, Vertex> vertices, Map<String, List<Edge>> edges, boolean directed) {
-		this.vertices = new HashMap<>(vertices);
-		this.edges = new HashMap<>(edges);
+		this.vertices = vertices.entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey(), e -> new Vertex(e.getValue())));
+		List<Edge> allEdges = edges
+				.values().stream().flatMap(Collection::stream).map(e -> new Edge(e.getId(),
+						this.vertices.get(e.getNode1Name()), this.vertices.get(e.getNode2Name()), e.getProperties()))
+				.collect(Collectors.toList());
+		this.edges = allEdges.stream().collect(Collectors.groupingBy(Edge::getNode1Name));
+		this.directed = directed;
+	}
+
+	public Graph(Map<String, Vertex> vertices, boolean directed) {
+		this.vertices = vertices.entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey(), e -> new Vertex(e.getValue())));
+		this.edges = new HashMap<>();
+		for (Vertex vertex : this.vertices.values()) {
+			this.edges.put(vertex.getName(), new ArrayList<Edge>());
+		}
 		this.directed = directed;
 	}
 
@@ -294,30 +310,30 @@ public class Graph {
 		});
 	}
 
+	// Changed: clone
 	public Graph DFS_I(Vertex s) {
-		Graph g = new Graph(false);
+		Graph resGraph = new Graph(this.getVertices(), this.isDirected());
+		Vertex source = resGraph.getVertices().get(s.getName());
 		Stack<Vertex> stack = new Stack<>();
-		vertices.values().forEach(vertex -> vertex.setProperty(VISITED, Boolean.FALSE));
+		resGraph.getVertices().values().forEach(vertex -> vertex.setProperty(VISITED, Boolean.FALSE));
 
-		stack.push(s);
-		s.setProperty(VISITED, Boolean.TRUE);
+		stack.push(source);
+		source.setProperty(VISITED, Boolean.TRUE);
 
 		while (!stack.empty()) {
 			Vertex u = stack.pop();
-			List<Edge> adjList = edges.get(u.getName());
-			adjList.forEach(edge -> {
-				Vertex v = edge.getNode2();
+			List<Edge> adjList = this.getEdges().get(u.getName());
+			for (Edge edge : adjList) {
+				Vertex v = resGraph.getVertices().get(edge.getNode2Name());
 				boolean visited = ((Boolean) v.getProperty(VISITED)).booleanValue();
 				if (!visited) {
 					v.setProperty(VISITED, Boolean.TRUE);
-					g.addEdge(u, v, edge.getProperties());
+					resGraph.addEdge(u, v, edge.getProperties());
 					stack.push(v);
 				}
-			});
+			}
 		}
-		// Add vertices to the graph map that were not discovered
-		vertices.values().forEach(vertex -> g.getVertices().putIfAbsent(vertex.getName(), vertex));
-		return g;
+		return resGraph;
 	}
 
 	public void randomEdgeValues(float min, float max) {
@@ -325,13 +341,14 @@ public class Graph {
 			List<Edge> adjList1 = entry.getValue();
 			for (Edge edge1 : adjList1) {
 				if (!edge1.getProperties().containsKey(WEIGHT)) {
-					Float weight = (float) ThreadLocalRandom.current().nextDouble(min, max);
-					edge1.setProperty(WEIGHT, weight); // n1->n2
+					Double random = ThreadLocalRandom.current().nextDouble(min, max);
+					float weight = random.floatValue();
+					edge1.setProperty(WEIGHT, Float.valueOf(weight)); // n1->n2
 					if (!directed) { // n2->n1
 						List<Edge> adjList2 = getEdges().get(edge1.getNode2().getName());
 						for (Edge edge2 : adjList2) {
-							if ((edge2.getNode2()).equals(edge1.getNode1())) {
-								edge2.setProperty(WEIGHT, weight);
+							if ((edge2.getNode2().getName()).equals(edge1.getNode1().getName())) {
+								edge2.setProperty(WEIGHT, Float.valueOf(weight));
 								break;
 							}
 						}
@@ -367,7 +384,8 @@ public class Graph {
 		return g;
 	}
 
-	private void reconstructDijkstra(Set<Vertex> s, Graph g, boolean formatNodes) {
+	private float reconstructDijkstra(Set<Vertex> s, Graph g, boolean formatNodes) {
+		float cost = 0.0f;
 		// Add vertices and edges
 		for (Vertex vertex : s) {
 			// Skip if source
@@ -390,15 +408,17 @@ public class Graph {
 				}
 			}
 			g.addEdge(auxNode1, auxNode2, vertexData);
+			cost += (Float) vertexData.get(WEIGHT);
 		}
+		return cost;
 	}
 
 	private void initializeSingleSource(Map<String, Vertex> vertices, Vertex source) {
 		for (Vertex vertex : vertices.values()) {
-			vertex.setProperty(DISTANCE, Float.POSITIVE_INFINITY);
+			vertex.setProperty(DISTANCE, Float.valueOf(Float.MAX_VALUE));
 			vertex.setProperty(PARENT, NIL);
 		}
-		source.setProperty(DISTANCE, Float.valueOf(0.0f));
+		vertices.get(source.getName()).setProperty(DISTANCE, Float.valueOf(0.0f));
 	}
 
 	private void relax(Vertex u, Vertex v, float weight, Queue<Vertex> q) {
@@ -424,7 +444,7 @@ public class Graph {
 			return 0;
 		}).get();
 
-		return this.vertices.get(entry.getKey());
+		return this.getVertices().get(entry.getKey());
 	}
 
 	// CLRS pag 631
@@ -437,8 +457,8 @@ public class Graph {
 			makeSet(v);
 		}
 		// Sort all edges
-		List<Edge> allEdges = new ArrayList<>();
-		edges.values().forEach(edges -> allEdges.addAll(edges));
+		List<Edge> allEdges = this.getEdges().values().stream().flatMap(Collection::stream)
+				.collect(Collectors.toList());
 		Collections.sort(allEdges, new EdgeWeightComparator());
 
 		for (Edge edge : allEdges) {
@@ -473,7 +493,7 @@ public class Graph {
 	}
 
 	private void clearSet() {
-		this.vertices.values().stream().forEach(v->v.getProperties().remove(PARENT));
+		this.vertices.values().stream().forEach(v -> v.getProperties().remove(PARENT));
 	}
 	// </union-find alg.>
 
@@ -482,8 +502,7 @@ public class Graph {
 		Graph a = new Graph(this.getVertices(), this.getEdges(), this.isDirected());
 		float mstCost = 0.0f;
 		// Sort all edges
-		List<Edge> allEdges = new ArrayList<>();
-		a.getEdges().values().forEach(e -> allEdges.addAll(e));
+		List<Edge> allEdges = a.getEdges().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
 		Collections.sort(allEdges, Collections.reverseOrder(new EdgeWeightComparator()));
 		// We need to keep track of reversed edges when graph is undirected
 		Set<String> seenEdges = new HashSet<>();
@@ -525,15 +544,15 @@ public class Graph {
 	}
 
 	public Graph Prim() {
-		// *** based on dijkstra implementation *** //		
+		// *** based on dijkstra implementation *** //
 		Vertex source = getVertexNameWithMaxOutDegree();
 		float mstCost = 0.0f;
 		initializeSingleSource(vertices, source);
 
 		// Priority queue keyed by distance
 		Queue<Vertex> q = new PriorityQueue<>(vertices.size(), new VertexDistanceComparator());
-		Set<Vertex>  inMST = new HashSet<>(vertices.size());
-		q.add(source);	
+		Set<Vertex> inMST = new HashSet<>(vertices.size());
+		q.addAll(vertices.values());
 
 		while (!q.isEmpty()) {
 			Vertex u = q.poll();
@@ -541,24 +560,110 @@ public class Graph {
 			List<Edge> adjList = edges.get(u.getName());
 			for (Edge e : adjList) {
 				Vertex v = e.getNode2();
-				Float weight = (Float) e.getProperty(WEIGHT);				
-				if (!inMST.contains(v) && weight < (Float) v.getProperty(DISTANCE)) {
-					//Update key of V
+				Float weight = (Float) e.getProperty(WEIGHT);
+				if (weight < (Float) v.getProperty(DISTANCE)) {
+					// Update key of V
 					v.setProperty(DISTANCE, weight);
-					//Insert into pq
-					q.offer(v);
 					// Assing parent
-					v.setProperty(PARENT, u.getName());	
-					mstCost += weight;										
+					v.setProperty(PARENT, u.getName());
+					// Insert into pq
+					q.offer(v);
+				}
+			}
+		}
+		// New graph reconstruction
+		Graph g = new Graph(directed);
+		mstCost = reconstructDijkstra(inMST, g, false);
+		System.out.printf("MST Prim      cost: %.2f\n", mstCost);
+		return g;
+	}
+
+	public Graph Prim2() {
+		Vertex source = getVertexNameWithMaxOutDegree();
+		// *** CLRS implementation *** //
+		initializeSingleSource(vertices, source);
+		Set<Vertex> s = new HashSet<>();
+		// Priority queue keyed by distance
+		Queue<Vertex> q = new PriorityQueue<>(vertices.size(), new VertexDistanceComparator());
+		q.addAll(vertices.values());
+
+		while (!q.isEmpty()) {
+			Vertex u = q.poll();
+			s.add(u);
+			List<Edge> adjList = edges.get(u.getName());
+			for (Edge e : adjList) {
+				Vertex v = vertices.get(e.getNode2Name());
+				Float weight = (Float) e.getProperty(WEIGHT);
+				if (q.contains(v) && weight < (Float) v.getProperty(DISTANCE)) {
+					v.setProperty(DISTANCE, Float.valueOf(weight));
+					v.setProperty(PARENT, u.getName());
+					q.offer(v);
 				}
 			}
 		}
 
-		System.out.printf("MST Prim      cost: %.2f\n", mstCost);
 		// New graph reconstruction
 		Graph g = new Graph(directed);
-		reconstructDijkstra(inMST, g, false);
+		float mstCost = reconstructDijkstra(s, g, true);
+		System.out.printf("MST Prim      cost: %.2f\n", mstCost);
 		return g;
+	}
+
+	public Graph Prim3() {
+		Map<String, Boolean> mstset = new HashMap<>();
+		Map<String, String> parent = new HashMap<>();
+		float mstCost = 0.0f;
+		for (String vertexName : this.getVertices().keySet()) {
+			mstset.put(vertexName, false);
+			parent.put(vertexName, NIL);
+			this.getVertices().get(vertexName).setProperty("KEY", Float.POSITIVE_INFINITY);
+		}
+
+		Vertex source = this.getVertices().entrySet().iterator().next().getValue();
+		source.setProperty("KEY", Float.valueOf(0.0f));
+
+		TreeSet<Vertex> queue = new TreeSet<>((node1, node2) -> {
+			Float node1Key = (Float) node1.getProperty("KEY");
+			Float node2Key = (Float) node2.getProperty("KEY");
+			return Float.compare(node1Key, node2Key);
+		});
+
+		for (Vertex vertex : this.getVertices().values()) {
+			queue.add(vertex);
+		}
+
+		while (!queue.isEmpty()) {
+			Vertex node1 = queue.pollFirst();
+			mstset.put(node1.getName(), true);
+			for (Edge edge : this.getEdges().get(node1.getName())) {
+				Vertex node2 = edge.getNode2();
+				if (mstset.get(node2.getName()) == false) {
+					if ((Float) node2.getProperty("KEY") > (Float) edge.getProperty(WEIGHT)) {
+						queue.remove(node2);
+						node2.setProperty("KEY", (Float) edge.getProperty(WEIGHT));
+						queue.add(node2);
+						parent.put(node2.getName(), node1.getName());
+					}
+				}
+			}
+		}
+
+		Graph result = new Graph(this.getVertices(), this.isDirected());
+		// Rebuild graph
+		for (Entry<String, String> parentChild : parent.entrySet()) {
+			Vertex childVertex = result.getVertices().get(parentChild.getKey());
+			Vertex parentVertex = result.getVertices().get(parentChild.getValue());
+			if (parentVertex != null) {
+				List<Edge> adjList = this.getEdges().get(parentVertex.getName());
+				Edge edge = adjList.stream().filter(e -> generateEdgeId(parentVertex, childVertex).equals(e.getId())).findFirst().get();
+				result.addEdge(childVertex, parentVertex, edge.getProperties());
+				mstCost += (Float) edge.getProperty(WEIGHT);
+			}
+			//
+
+		}
+		System.out.printf("MST Prim      cost: %.2f\n", mstCost);
+		return result;
 	}
 
 	// To file
@@ -571,24 +676,12 @@ public class Graph {
 		return vertices;
 	}
 
-	public void setVertices(Map<String, Vertex> vertices) {
-		this.vertices = vertices;
-	}
-
 	public Map<String, List<Edge>> getEdges() {
 		return edges;
 	}
 
-	public void setEdges(Map<String, List<Edge>> edges) {
-		this.edges = edges;
-	}
-
 	public boolean isDirected() {
 		return directed;
-	}
-
-	public void setDirected(boolean directed) {
-		this.directed = directed;
 	}
 
 	@Override

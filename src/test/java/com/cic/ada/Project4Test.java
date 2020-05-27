@@ -87,9 +87,11 @@ public class Project4Test {
         Graph connected = getAConnectedComponent(graph);
         System.out.println(type + graph.getVertices().size());
         connected.writeToFile(path, type + graph.getVertices().size() + fileExt);
-        connected.Prim().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);
         connected.Kruskal_D().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_D" + fileExt);
         connected.Kruskal_I().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_I" + fileExt);
+        //connected.Prim().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);                
+        //connected.Prim2().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);        
+        connected.Prim3().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);        
         System.out.println("_________________________________");
     }
 

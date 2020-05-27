@@ -2,6 +2,7 @@ package com.cic.ada.Grafo;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Vertex {
 	private String name;
@@ -15,6 +16,12 @@ public class Vertex {
 	public Vertex(String name, Map<String, Object> properties) {
 		this.name = name;
 		this.properties = new HashMap<>(properties);
+	}
+
+	public Vertex(Vertex vertex) {
+		this.name = vertex.getName();
+		this.properties = vertex.getProperties().entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 	}
 
 	public String getName() {
