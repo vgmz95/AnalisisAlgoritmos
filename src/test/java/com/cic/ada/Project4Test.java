@@ -18,7 +18,7 @@ public class Project4Test {
     int few = 30; // Few nodes (<50)
     int many = 100; // Many nodes (<100)
     int lots = 500; // Lots of nodes
-    float min = 1.0f, max = 100.0f;
+    float min = 10.0f, max = 100.0f;
     String path = "/home/victor/Documents/grafos/ArchivosGenerados_Proyecto4";
     String fileExt = ".gv";
 
@@ -89,9 +89,7 @@ public class Project4Test {
         connected.writeToFile(path, type + graph.getVertices().size() + fileExt);
         connected.Kruskal_D().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_D" + fileExt);
         connected.Kruskal_I().writeToFile(path, type + graph.getVertices().size() + "-Kruskal_I" + fileExt);
-        //connected.Prim().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);                
-        //connected.Prim2().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);        
-        connected.Prim3().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);        
+        connected.Prim().writeToFile(path, type + graph.getVertices().size() + "-Prim" + fileExt);
         System.out.println("_________________________________");
     }
 

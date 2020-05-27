@@ -34,6 +34,7 @@ public class Graph {
 	public static final String WEIGHT = "weight";
 	private static final String NIL = "nil";
 	private static final String PARENT = "parent";
+	private static final String KEY = "KEY";
 
 	public Graph(boolean directed) {
 		this.vertices = new HashMap<>();
@@ -310,7 +311,6 @@ public class Graph {
 		});
 	}
 
-	// Changed: clone
 	public Graph DFS_I(Vertex s) {
 		Graph resGraph = new Graph(this.getVertices(), this.isDirected());
 		Vertex source = resGraph.getVertices().get(s.getName());
@@ -384,8 +384,7 @@ public class Graph {
 		return g;
 	}
 
-	private float reconstructDijkstra(Set<Vertex> s, Graph g, boolean formatNodes) {
-		float cost = 0.0f;
+	private void reconstructDijkstra(Set<Vertex> s, Graph g, boolean formatNodes) {		
 		// Add vertices and edges
 		for (Vertex vertex : s) {
 			// Skip if source
@@ -407,10 +406,9 @@ public class Graph {
 					break;
 				}
 			}
-			g.addEdge(auxNode1, auxNode2, vertexData);
-			cost += (Float) vertexData.get(WEIGHT);
+			g.addEdge(auxNode1, auxNode2, vertexData);			
 		}
-		return cost;
+
 	}
 
 	private void initializeSingleSource(Map<String, Vertex> vertices, Vertex source) {
@@ -544,87 +542,21 @@ public class Graph {
 	}
 
 	public Graph Prim() {
-		// *** based on dijkstra implementation *** //
-		Vertex source = getVertexNameWithMaxOutDegree();
-		float mstCost = 0.0f;
-		initializeSingleSource(vertices, source);
-
-		// Priority queue keyed by distance
-		Queue<Vertex> q = new PriorityQueue<>(vertices.size(), new VertexDistanceComparator());
-		Set<Vertex> inMST = new HashSet<>(vertices.size());
-		q.addAll(vertices.values());
-
-		while (!q.isEmpty()) {
-			Vertex u = q.poll();
-			inMST.add(u);
-			List<Edge> adjList = edges.get(u.getName());
-			for (Edge e : adjList) {
-				Vertex v = e.getNode2();
-				Float weight = (Float) e.getProperty(WEIGHT);
-				if (weight < (Float) v.getProperty(DISTANCE)) {
-					// Update key of V
-					v.setProperty(DISTANCE, weight);
-					// Assing parent
-					v.setProperty(PARENT, u.getName());
-					// Insert into pq
-					q.offer(v);
-				}
-			}
-		}
-		// New graph reconstruction
-		Graph g = new Graph(directed);
-		mstCost = reconstructDijkstra(inMST, g, false);
-		System.out.printf("MST Prim      cost: %.2f\n", mstCost);
-		return g;
-	}
-
-	public Graph Prim2() {
-		Vertex source = getVertexNameWithMaxOutDegree();
-		// *** CLRS implementation *** //
-		initializeSingleSource(vertices, source);
-		Set<Vertex> s = new HashSet<>();
-		// Priority queue keyed by distance
-		Queue<Vertex> q = new PriorityQueue<>(vertices.size(), new VertexDistanceComparator());
-		q.addAll(vertices.values());
-
-		while (!q.isEmpty()) {
-			Vertex u = q.poll();
-			s.add(u);
-			List<Edge> adjList = edges.get(u.getName());
-			for (Edge e : adjList) {
-				Vertex v = vertices.get(e.getNode2Name());
-				Float weight = (Float) e.getProperty(WEIGHT);
-				if (q.contains(v) && weight < (Float) v.getProperty(DISTANCE)) {
-					v.setProperty(DISTANCE, Float.valueOf(weight));
-					v.setProperty(PARENT, u.getName());
-					q.offer(v);
-				}
-			}
-		}
-
-		// New graph reconstruction
-		Graph g = new Graph(directed);
-		float mstCost = reconstructDijkstra(s, g, true);
-		System.out.printf("MST Prim      cost: %.2f\n", mstCost);
-		return g;
-	}
-
-	public Graph Prim3() {
 		Map<String, Boolean> mstset = new HashMap<>();
 		Map<String, String> parent = new HashMap<>();
 		float mstCost = 0.0f;
 		for (String vertexName : this.getVertices().keySet()) {
 			mstset.put(vertexName, false);
 			parent.put(vertexName, NIL);
-			this.getVertices().get(vertexName).setProperty("KEY", Float.POSITIVE_INFINITY);
+			this.getVertices().get(vertexName).setProperty(KEY, Float.POSITIVE_INFINITY);
 		}
 
 		Vertex source = this.getVertices().entrySet().iterator().next().getValue();
-		source.setProperty("KEY", Float.valueOf(0.0f));
+		source.setProperty(KEY, Float.valueOf(0.0f));
 
 		TreeSet<Vertex> queue = new TreeSet<>((node1, node2) -> {
-			Float node1Key = (Float) node1.getProperty("KEY");
-			Float node2Key = (Float) node2.getProperty("KEY");
+			Float node1Key = (Float) node1.getProperty(KEY);
+			Float node2Key = (Float) node2.getProperty(KEY);
 			return Float.compare(node1Key, node2Key);
 		});
 
@@ -638,9 +570,9 @@ public class Graph {
 			for (Edge edge : this.getEdges().get(node1.getName())) {
 				Vertex node2 = edge.getNode2();
 				if (mstset.get(node2.getName()) == false) {
-					if ((Float) node2.getProperty("KEY") > (Float) edge.getProperty(WEIGHT)) {
+					if ((Float) node2.getProperty(KEY) > (Float) edge.getProperty(WEIGHT)) {
 						queue.remove(node2);
-						node2.setProperty("KEY", (Float) edge.getProperty(WEIGHT));
+						node2.setProperty(KEY, (Float) edge.getProperty(WEIGHT));
 						queue.add(node2);
 						parent.put(node2.getName(), node1.getName());
 					}
