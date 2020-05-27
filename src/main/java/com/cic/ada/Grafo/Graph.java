@@ -384,7 +384,7 @@ public class Graph {
 		return g;
 	}
 
-	private void reconstructDijkstra(Set<Vertex> s, Graph g, boolean formatNodes) {		
+	private void reconstructDijkstra(Set<Vertex> s, Graph g, boolean formatNodes) {
 		// Add vertices and edges
 		for (Vertex vertex : s) {
 			// Skip if source
@@ -406,7 +406,7 @@ public class Graph {
 					break;
 				}
 			}
-			g.addEdge(auxNode1, auxNode2, vertexData);			
+			g.addEdge(auxNode1, auxNode2, vertexData);
 		}
 
 	}
@@ -587,12 +587,11 @@ public class Graph {
 			Vertex parentVertex = result.getVertices().get(parentChild.getValue());
 			if (parentVertex != null) {
 				List<Edge> adjList = this.getEdges().get(parentVertex.getName());
-				Edge edge = adjList.stream().filter(e -> generateEdgeId(parentVertex, childVertex).equals(e.getId())).findFirst().get();
+				Edge edge = adjList.stream().filter(e -> generateEdgeId(parentVertex, childVertex).equals(e.getId()))
+						.findFirst().get();
 				result.addEdge(childVertex, parentVertex, edge.getProperties());
 				mstCost += (Float) edge.getProperty(WEIGHT);
 			}
-			//
-
 		}
 		System.out.printf("MST Prim      cost: %.2f\n", mstCost);
 		return result;

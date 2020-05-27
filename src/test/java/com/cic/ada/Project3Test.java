@@ -87,6 +87,7 @@ public class Project3Test {
 		graph.writeToFile(path, type + graph.getVertices().size() + fileExt);
 	}
 
+	//CLRS page 659
 	@Test
 	public void clrsDijkstraExampleTest() throws IOException {
 		Graph g = new Graph(true);
