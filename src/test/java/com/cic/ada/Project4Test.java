@@ -45,8 +45,8 @@ public class Project4Test {
     @Test
     public void gilbertMstTest() throws IOException {
         String type = "2_Gilbert-";
-        Graph[] GilbertGraphs = { Graph.generateGilbertGraph(few, 0.02, false, false),
-                Graph.generateGilbertGraph(many, 0.02, false, false),
+        Graph[] GilbertGraphs = { Graph.generateGilbertGraph(few, 0.1, false, false),
+                Graph.generateGilbertGraph(many, 0.1, false, false),
                 Graph.generateGilbertGraph(lots, 0.02, false, false), };
 
         for (Graph graph : GilbertGraphs) {
